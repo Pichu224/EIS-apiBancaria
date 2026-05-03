@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: apibancaria
+  datasource:
+    url: jdbc:postgresql://localhost:5432/apibancaria
+    username: postgres
+    password: 2244        #depende de cada uno ésto.
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop   # validate | update | create | create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
