@@ -47,11 +47,11 @@ public class UsuarioTest {
         userTest.setApellido("Vaqui");
         userTest.setDni("40.999.123");
 
-        assertNotEquals(userTest.getIdUsuario(), null);
-        assertNotEquals(userTest.getEmail(), "nico@gmail.com");
-        assertNotEquals(userTest.getContrasenia(), "123");
-        assertNotEquals(userTest.getNombre(), "Nicolas");
-        assertNotEquals(userTest.getApellido(), "Vaccaro");
-        assertNotEquals(userTest.getDni(), "40.123.456");
+        assertNotEquals(null, userTest.getIdUsuario());
+        assertNotEquals("nico@gmail.com", userTest.getEmail());
+        assertNotEquals("123", userTest.getContrasenia());
+        assertNotEquals("Nicolas", userTest.getNombre());
+        assertNotEquals("Vaccaro", userTest.getApellido());
+        assertNotEquals("40.123.456", userTest.getDni());
     }
 }

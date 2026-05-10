@@ -2,7 +2,6 @@ package com.unq.eis.apibancaria.service;
 
 import com.unq.eis.apibancaria.ApibancariaApplication;
 import com.unq.eis.apibancaria.exception.EmailYaExistenteException;
-import com.unq.eis.apibancaria.exception.MailInvalidoException;
 import com.unq.eis.apibancaria.exception.UsuarioInexistenteException;
 import com.unq.eis.apibancaria.modelo.Usuario;
 import com.unq.eis.apibancaria.persistence.UsuarioDAO;
@@ -20,8 +19,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest(classes = ApibancariaApplication.class)
 public class UsuarioServiceImplTest {
 
-    @Autowired private UsuarioService serviceUsuario;
-    @Autowired private UsuarioDAO usuarioDAO;
+    @Autowired
+    private UsuarioService serviceUsuario;
+
+    @Autowired
+    private UsuarioDAO usuarioDAO;
 
     private Usuario usuarioTest1;
     private Usuario usuarioTest2;
@@ -52,7 +54,7 @@ public class UsuarioServiceImplTest {
         usuarioTest2 = new Usuario("nico@gmail.com","456","Nicolas","Vaccaro","40.123.456");
 
         serviceUsuario.crear(usuarioTest1);
-        assertThrows(EmailYaExistenteException.class, () -> {serviceUsuario.crear(usuarioTest2);});
+        assertThrows(EmailYaExistenteException.class, () -> serviceUsuario.crear(usuarioTest2));
     }
 
     @Test
@@ -82,7 +84,7 @@ public class UsuarioServiceImplTest {
     public void ActualizarFallaPorUsuarioNoPersistido(){
         usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
 
-        assertThrows(UsuarioInexistenteException.class, () -> {serviceUsuario.actualizar(usuarioTest1);});
+        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.actualizar(usuarioTest1));
     }
 
     @Test
@@ -90,7 +92,7 @@ public class UsuarioServiceImplTest {
         usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
         usuarioTest1.setIdUsuario(100L);
 
-        assertThrows(UsuarioInexistenteException.class, () -> {serviceUsuario.actualizar(usuarioTest1);});
+        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.actualizar(usuarioTest1));
     }
 
     @Test
@@ -113,7 +115,7 @@ public class UsuarioServiceImplTest {
     public void RecuperarUsuarioSinSerPersistido(){
         usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
 
-        assertThrows(UsuarioInexistenteException.class, () -> {serviceUsuario.recuperar(usuarioTest1.getIdUsuario());});
+        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.recuperar(usuarioTest1.getIdUsuario()));
     }
 
     @Test
@@ -121,7 +123,7 @@ public class UsuarioServiceImplTest {
         usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
         usuarioTest1.setIdUsuario(100L);
 
-        assertThrows(UsuarioInexistenteException.class, () -> {serviceUsuario.recuperar(usuarioTest1.getIdUsuario());});
+        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.recuperar(usuarioTest1.getIdUsuario()));
     }
 
     @Test
@@ -131,7 +133,7 @@ public class UsuarioServiceImplTest {
 
         serviceUsuario.eliminar(usuarioTest1.getIdUsuario());
 
-        assertThrows(UsuarioInexistenteException.class, () -> {serviceUsuario.recuperar(usuarioTest1.getIdUsuario());});
+        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.recuperar(usuarioTest1.getIdUsuario()));
 
     }
 
@@ -139,7 +141,7 @@ public class UsuarioServiceImplTest {
     public void BorrarUsuarioQueNoPosseId(){
         usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
 
-        assertThrows(UsuarioInexistenteException.class, () -> {serviceUsuario.eliminar(usuarioTest1.getIdUsuario());});
+        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.eliminar(usuarioTest1.getIdUsuario()));
     }
 
     @AfterEach
