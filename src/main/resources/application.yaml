@@ -4,12 +4,12 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/apibancaria
     username: postgres
-    password: 2244        #depende de cada uno ésto.
+    password: root       #depende de cada uno ésto.
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: create-drop   # validate | update | create | create-drop
+      ddl-auto: update   # validate | update | create | create-drop
     show-sql: true
     properties:
       hibernate:
