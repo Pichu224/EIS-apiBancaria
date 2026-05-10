@@ -40,7 +40,7 @@ public class UsuarioServiceImplTest {
         usuarioTest2 = serviceUsuario.recuperar(usuarioTest1.getIdUsuario());
 
         assertEquals(usuarioTest1.getEmail(), usuarioTest2.getEmail());
-        assertEquals(usuarioTest1.getContraseña(), usuarioTest2.getContraseña());
+        assertEquals(usuarioTest1.getContrasenia(), usuarioTest2.getContrasenia());
         assertEquals(usuarioTest1.getNombre(), usuarioTest2.getNombre());
         assertEquals(usuarioTest1.getApellido(), usuarioTest2.getApellido());
         assertEquals(usuarioTest1.getDni(), usuarioTest2.getDni());
@@ -60,7 +60,7 @@ public class UsuarioServiceImplTest {
         usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
         serviceUsuario.crear(usuarioTest1);
 
-        usuarioTest1.setContraseña("456");
+        usuarioTest1.setContrasenia("456");
         usuarioTest1.setNombre("Nico");
         usuarioTest1.setApellido("Vaqui");
         usuarioTest1.setDni("40.321.654");
@@ -71,7 +71,7 @@ public class UsuarioServiceImplTest {
 
         assertEquals(usuarioTest1.getIdUsuario(),usuarioTest2.getIdUsuario());
         assertEquals(usuarioTest1.getEmail(), usuarioTest2.getEmail());
-        assertEquals(usuarioTest1.getContraseña(), usuarioTest2.getContraseña());
+        assertEquals(usuarioTest1.getContrasenia(), usuarioTest2.getContrasenia());
         assertEquals(usuarioTest1.getNombre(), usuarioTest2.getNombre());
         assertEquals(usuarioTest1.getApellido(), usuarioTest2.getApellido());
         assertEquals(usuarioTest1.getDni(), usuarioTest2.getDni());
@@ -102,7 +102,7 @@ public class UsuarioServiceImplTest {
 
         assertEquals(usuarioTest1.getIdUsuario(),usuarioTest2.getIdUsuario());
         assertEquals(usuarioTest1.getEmail(), usuarioTest2.getEmail());
-        assertEquals(usuarioTest1.getContraseña(), usuarioTest2.getContraseña());
+        assertEquals(usuarioTest1.getContrasenia(), usuarioTest2.getContrasenia());
         assertEquals(usuarioTest1.getNombre(), usuarioTest2.getNombre());
         assertEquals(usuarioTest1.getApellido(), usuarioTest2.getApellido());
         assertEquals(usuarioTest1.getDni(), usuarioTest2.getDni());

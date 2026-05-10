@@ -53,5 +53,7 @@ public class Caja {
 
     }
 
-    //Hacer los metodos tanto para depositar como sacar con sus respectivas validaciones.
+    public void depositarEnCaja(BigDecimal monto){
+
+    }
 }

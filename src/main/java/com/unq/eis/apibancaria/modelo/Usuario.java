@@ -33,7 +33,7 @@ public class Usuario {
     private String email;
 
     @Column(nullable = false, length = 255)
-    private String contraseña;
+    private String contrasenia;
 
     @Column(length = 100)
     private String nombre;
@@ -52,10 +52,10 @@ public class Usuario {
             orphanRemoval = true)   // Permite que si se borra una caja, cuando le pegemos a la BD, este se actualiza sola al pasarle el usuario. Evitando tener que borrar la caja con otra peticion a la BD.
     private List<Caja> cajas = new ArrayList<>();
 
-    public Usuario(String email, String contraseña, String nombre, String apellido, String dni) {
+    public Usuario(String email, String contrasenia, String nombre, String apellido, String dni) {
 
         this.email = this.validarMail(email);
-        this.contraseña = this.validarContraseña(contraseña);
+        this.contrasenia = this.validarContrasenia(contrasenia);
         this.nombre = nombre;
         this.apellido = apellido;
         this.dni = dni;
@@ -67,9 +67,9 @@ public class Usuario {
             throw new MailInvalidoException("El mail es vacio o no este no es valido!");
         return email;
     }
-    private String validarContraseña(String contraseña){
+    private String validarContrasenia(String contraseña){
         if (contraseña == null || contraseña.isEmpty()){
-            throw new ContraseñaVaciaException("La contraseña no puede ser vacia!");
+            throw new ContraseniaVaciaException("La contraseña no puede ser vacia!");
         }
         return contraseña;
     }
