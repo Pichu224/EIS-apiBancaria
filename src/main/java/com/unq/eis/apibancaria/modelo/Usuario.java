@@ -8,10 +8,19 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 @Entity
+@Table(
+        name = "usuario",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "email"),
+                @UniqueConstraint(columnNames = "dni")
+        }
+)
 @ToString
 @NoArgsConstructor // Necesita esta etiqueta ya que no permite que no haya una clase sin constructor por defecto.
 public class Usuario {
@@ -28,13 +37,20 @@ public class Usuario {
 
     @Column(length = 100)
     private String nombre;
+
+    @Column(length = 100)
     private String apellido;
 
-    @Column(length = 20)
+    @Column(unique = true, length = 20)
     private String dni;
 
     @Column(nullable = false)
     private LocalDateTime fechaRegistro;
+
+    @OneToMany(mappedBy = "usuario",
+            cascade = CascadeType.ALL, // Trae solo las cajas si es necesario, es decir, cuando se las llama.
+            orphanRemoval = true)   // Permite que si se borra una caja, cuando le pegemos a la BD, este se actualiza sola al pasarle el usuario. Evitando tener que borrar la caja con otra peticion a la BD.
+    private List<Caja> cajas = new ArrayList<>();
 
     public Usuario(String email, String contraseña, String nombre, String apellido, String dni) {
 
