@@ -2,7 +2,6 @@ package com.unq.eis.apibancaria.modelo;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -28,7 +27,7 @@ public class Movimiento {
     @Column(nullable = false, updatable = false)
     private LocalDateTime fechaRealizado;
 
-    @Column(length = 255)
+    @Column()
     private String descripcion;
 
     @Column(nullable = false)
@@ -40,7 +39,8 @@ public class Movimiento {
 
     public Movimiento(Long nroTransferencia, Caja cajaUtilizada,String descripcion) {
 
-        // El resto de valores se deberan setear una vez hecha la transferenci, utilizando los setters se la clase para luego persistir como corresponde.
+        // El resto de valores se deberan setear una vez hecha la transferenci,
+        // utilizando los setters de la clase para luego persistir como corresponde.
         this.nroTransferencia = nroTransferencia;
         this.cajaUtilizada = cajaUtilizada;
         this.descripcion = descripcion;

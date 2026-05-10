@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
 @Entity
 @Table(
         name = "usuario",
@@ -22,35 +21,40 @@ import java.util.List;
         }
 )
 @ToString
-@NoArgsConstructor // Necesita esta etiqueta ya que no permite que no haya una clase sin constructor por defecto.
+@NoArgsConstructor // Necesita esta etiqueta, ya que no permite que no haya una clase sin constructor por defecto.
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter
     private Long idUsuario;
 
-    @Column(nullable = false, unique = true, length = 255)
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String contrasenia;
 
     @Column(length = 100)
+    @Setter
     private String nombre;
 
     @Column(length = 100)
+    @Setter
     private String apellido;
 
     @Column(unique = true, length = 20)
+    @Setter
     private String dni;
 
     @Column(nullable = false)
-    private LocalDateTime fechaRegistro;
+    private LocalDateTime fechaRegistro = LocalDateTime.now();
 
     @OneToMany(mappedBy = "usuario",
-            cascade = CascadeType.ALL, // Trae solo las cajas si es necesario, es decir, cuando se las llama.
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,  // Trae solo las cajas si es necesario, es decir, cuando se las llama.
             orphanRemoval = true)   // Permite que si se borra una caja, cuando le pegemos a la BD, este se actualiza sola al pasarle el usuario. Evitando tener que borrar la caja con otra peticion a la BD.
-    private List<Caja> cajas = new ArrayList<>();
+    private final List<Caja> cajas = new ArrayList<>();
 
     public Usuario(String email, String contrasenia, String nombre, String apellido, String dni) {
 
@@ -59,7 +63,11 @@ public class Usuario {
         this.nombre = nombre;
         this.apellido = apellido;
         this.dni = dni;
-        this.fechaRegistro = LocalDateTime.now();
+    }
+
+    public Usuario(String email, String contrasenia) {
+        this.email = this.validarMail(email);
+        this.contrasenia = this.validarContrasenia(contrasenia);
     }
 
     private String validarMail(String email){
@@ -67,13 +75,18 @@ public class Usuario {
             throw new MailInvalidoException("El mail es vacio o no este no es valido!");
         return email;
     }
-    private String validarContrasenia(String contraseña){
-        if (contraseña == null || contraseña.isEmpty()){
+    private String validarContrasenia(String contrasenia){
+        if (contrasenia == null || contrasenia.isEmpty()){
             throw new ContraseniaVaciaException("La contraseña no puede ser vacia!");
         }
-        return contraseña;
+        return contrasenia;
     }
 
+    public void setContrasenia(String contrasenia) {
+        this.contrasenia = this.validarContrasenia(contrasenia);
+    }
 
-
+    public void setEmail(String email) {
+        this.email = this.validarMail(email);
+    }
 }
