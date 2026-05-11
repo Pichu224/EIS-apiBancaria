@@ -57,10 +57,11 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new EmailYaExistenteException("Ya existe un usuario con ese email");
         }
 
-        existente.setNombre(usuario.getNombre());
         existente.setEmail(usuario.getEmail());
         existente.setContrasenia(usuario.getContrasenia());
+        existente.setNombre(usuario.getNombre());
         existente.setApellido(usuario.getApellido());
+        existente.setDni(usuario.getDni());
 
         usuarioDao.save(existente);
     }
