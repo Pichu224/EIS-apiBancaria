@@ -173,6 +173,24 @@ public class CajaServiceImplTest {
         assertThrows(AliasYaExistenteException.class, () -> {serviceCaja.actualizar(cajaTest1);});
     }
 
+    @Test
+    public void EliminarUnaCajaPersistida(){
+        serviceUsuario.crear(usuarioTest1);
+        serviceCaja.crear(cajaTest1);
+
+        serviceCaja.eliminar(cajaTest1.getIdCaja());
+
+        assertThrows(CajaInexistenteException.class, () -> {serviceCaja.recuperar(cajaTest1.getIdCaja());});
+    }
+
+    @Test
+    public void ErrorEliminarCajaNoPersistidaYSinId(){
+
+        assertThrows(CajaInexistenteException.class, () ->{serviceCaja.eliminar(null);});
+        cajaTest1.setIdCaja(1L);
+        assertThrows(CajaInexistenteException.class, () ->{serviceCaja.eliminar(cajaTest1.getIdCaja());});
+    }
+
     @AfterEach
     void cleanup() {
         cajaDAO.deleteAll();

@@ -80,6 +80,8 @@ public class CajaServiceImpl implements CajaService {
         cajaRecuperada.setAlias(caja.getAlias());
         cajaRecuperada.setTipoCaja(caja.getTipoCaja());
 
+        cajaDao.save(cajaRecuperada);
+
     }
 
     @Override
@@ -88,5 +90,7 @@ public class CajaServiceImpl implements CajaService {
         if (idCaja == null || !cajaDao.existsById(idCaja)){
             throw new CajaInexistenteException("Caja no encontrada");
         }
+
+        cajaDao.deleteById(idCaja);
     }
 }
