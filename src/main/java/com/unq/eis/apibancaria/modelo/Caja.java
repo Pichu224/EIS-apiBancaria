@@ -1,5 +1,7 @@
 package com.unq.eis.apibancaria.modelo;
 
+import com.unq.eis.apibancaria.exception.MontoInvalidoException;
+import com.unq.eis.apibancaria.exception.SaldoInsuficienteException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -53,7 +55,25 @@ public class Caja {
 
     }
 
-    public void depositarEnCaja(BigDecimal monto){
+    public void depositar(BigDecimal monto) {
 
+        if(monto.compareTo(BigDecimal.ZERO) <= 0) { //Retorna -1 si es menor o 0 si es igual.
+            throw new MontoInvalidoException("El monto debe ser mayor a cero!");
+        }
+
+        this.saldo = this.saldo.add(monto);
+    }
+
+    public void retirar(BigDecimal monto) {
+
+        if(monto.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new MontoInvalidoException("El monto debe ser mayor a cero!");
+        }
+
+        if(this.saldo.compareTo(monto) < 0) {
+            throw new SaldoInsuficienteException("Saldo insuficiente");
+        }
+
+        this.saldo = this.saldo.subtract(monto);
     }
 }

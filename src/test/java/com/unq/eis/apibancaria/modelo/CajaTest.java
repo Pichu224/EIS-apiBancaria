@@ -1,11 +1,14 @@
 package com.unq.eis.apibancaria.modelo;
 
+import com.unq.eis.apibancaria.exception.MontoInvalidoException;
+import com.unq.eis.apibancaria.exception.SaldoInsuficienteException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CajaTest {
 
@@ -44,5 +47,46 @@ public class CajaTest {
         assertEquals(BigDecimal.ONE, caja1.getSaldo());
         assertEquals(TipoCaja.CajaCorriente, caja1.getTipoCaja());
         assertEquals(caja1.getUsuario().getNombre(), usuario2.getNombre());
+    }
+
+    @Test
+    public void DepositarDineroExitoso(){
+
+        assertEquals(BigDecimal.ZERO, caja1.getSaldo());
+
+        caja1.depositar(BigDecimal.valueOf(100));
+
+        assertEquals(BigDecimal.valueOf(100), caja1.getSaldo());
+
+    }
+
+    @Test
+    public void ErrorAlDepositarMontoIgualoMenorACero(){
+
+        assertThrows(MontoInvalidoException.class, () -> {caja1.depositar(BigDecimal.ZERO);});
+        assertThrows(MontoInvalidoException.class, () -> {caja1.depositar(BigDecimal.valueOf(-1));});
+    }
+
+    @Test
+    public void RetirarDineroDeCajaExitoso(){
+
+        caja1.depositar(BigDecimal.valueOf(100));
+        assertEquals(BigDecimal.valueOf(100), caja1.getSaldo());
+
+        caja1.retirar(BigDecimal.valueOf(100));
+        assertEquals(BigDecimal.ZERO, caja1.getSaldo());
+    }
+
+    @Test
+    public void ErrorRetirarMontoIgualoMenorACero(){
+
+        assertThrows(MontoInvalidoException.class, () -> {caja1.retirar(BigDecimal.ZERO);});
+        assertThrows(MontoInvalidoException.class, () -> {caja1.retirar(BigDecimal.valueOf(-1));});
+    }
+
+    @Test
+    public void ErrorRetirarMontoConCajaSinSaldo(){
+
+        assertThrows(SaldoInsuficienteException.class, () -> {caja1.retirar(BigDecimal.ONE);});
     }
 }
