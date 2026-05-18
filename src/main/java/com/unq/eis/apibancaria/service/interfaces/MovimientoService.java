@@ -4,8 +4,8 @@ import com.unq.eis.apibancaria.modelo.Movimiento;
 
 public interface MovimientoService {
 
-    void crear(Movimiento movimiento);
+    Movimiento crear(Movimiento movimiento);
     Movimiento recuperar(Long idMovimiento);
-    void actualizar(Movimiento movimiento);
+    Movimiento actualizar(Long id, Movimiento movimiento);
     void eliminar(Long idMovimiento);
 }

@@ -4,9 +4,9 @@ import com.unq.eis.apibancaria.modelo.Transferencia;
 
 public interface TransferenciaService {
 
-    void crear(Transferencia transferencia);
+    Transferencia crear(Transferencia transferencia);
     Transferencia recuperar(Long idTransferencia);
-    void actualizar(Transferencia transferencia);
+    Transferencia actualizar(Long id, Transferencia transferencia);
     void eliminar(Long idTransferencia);
 
 }

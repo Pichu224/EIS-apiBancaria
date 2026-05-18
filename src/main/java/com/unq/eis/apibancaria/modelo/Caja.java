@@ -46,34 +46,29 @@ public class Caja {
     private Usuario usuario;
 
     public Caja(Long nroCaja, String alias, Usuario usuario){
-
         this.nroCaja = nroCaja;
         this.alias = alias;
         this.tipoCaja = TipoCaja.CajaAhorro;
         this.saldo = BigDecimal.ZERO;
         this.usuario = usuario;
-
     }
 
     public void depositar(BigDecimal monto) {
-
-        if(monto.compareTo(BigDecimal.ZERO) <= 0) { //Retorna -1 si es menor o 0 si es igual.
-            throw new MontoInvalidoException("El monto debe ser mayor a cero!");
-        }
-
+        this.validarMonto(monto);
         this.saldo = this.saldo.add(monto);
     }
 
     public void retirar(BigDecimal monto) {
-
-        if(monto.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new MontoInvalidoException("El monto debe ser mayor a cero!");
-        }
-
+        this.validarMonto(monto);
         if(this.saldo.compareTo(monto) < 0) {
             throw new SaldoInsuficienteException("Saldo insuficiente");
         }
-
         this.saldo = this.saldo.subtract(monto);
+    }
+
+    private void validarMonto(BigDecimal monto) {
+        if(monto.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new MontoInvalidoException("El monto debe ser mayor a cero!");
+        }
     }
 }

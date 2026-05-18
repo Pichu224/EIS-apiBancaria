@@ -4,21 +4,19 @@ import com.unq.eis.apibancaria.modelo.Caja;
 import com.unq.eis.apibancaria.modelo.Transferencia;
 import com.unq.eis.apibancaria.persistence.TransferenciaDAO;
 import com.unq.eis.apibancaria.service.interfaces.TransferenciaService;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class TransferenciaServiceImpl implements TransferenciaService {
 
     private final TransferenciaDAO transferenciaDAO;
 
-    public TransferenciaServiceImpl(TransferenciaDAO transferenciaDAO){
-        this.transferenciaDAO = transferenciaDAO;
-    }
-
     @Override
-    public void crear(Transferencia transferencia){
+    public Transferencia crear(Transferencia transferencia){
 
     }
 
@@ -28,7 +26,7 @@ public class TransferenciaServiceImpl implements TransferenciaService {
     }
 
     @Override
-    public void actualizar(Transferencia transferencia){
+    public Transferencia actualizar(Long id, Transferencia transferencia){
 
     }
 

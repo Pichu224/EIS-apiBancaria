@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = "cajaUtilizada")
-
 public class Movimiento {
 
     @Id
@@ -25,9 +24,8 @@ public class Movimiento {
     private BigDecimal monto;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime fechaRealizado;
+    private LocalDateTime fechaRealizado = LocalDateTime.now();
 
-    @Column()
     private String descripcion;
 
     @Column(nullable = false)
@@ -38,11 +36,10 @@ public class Movimiento {
     private Caja cajaUtilizada;
 
     public Movimiento(Long nroTransferencia, Caja cajaUtilizada,String descripcion) {
-
-        // El resto de valores se deberan setear una vez hecha la transferenci,
-        // utilizando los setters de la clase para luego persistir como corresponde.
         this.nroTransferencia = nroTransferencia;
         this.cajaUtilizada = cajaUtilizada;
         this.descripcion = descripcion;
+        // El resto de valores se deberan setear una vez hecha la transferencia,
+        // utilizando los setters de la clase para luego persistir como corresponde.
     }
 }

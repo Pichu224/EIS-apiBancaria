@@ -4,8 +4,8 @@ import com.unq.eis.apibancaria.modelo.Caja;
 
 public interface CajaService {
 
-    void crear(Caja caja);
+    Caja crear(Caja caja);
     Caja recuperar(Long idCaja);
-    void actualizar(Caja caja);
+    Caja actualizar(Long id, Caja caja);
     void eliminar(Long idCaja);
 }
