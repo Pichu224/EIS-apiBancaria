@@ -1,10 +1,7 @@
 package com.unq.eis.apibancaria.service;
 
 import com.unq.eis.apibancaria.ApibancariaApplication;
-import com.unq.eis.apibancaria.exception.AliasYaExistenteException;
-import com.unq.eis.apibancaria.exception.CajaInexistenteException;
-import com.unq.eis.apibancaria.exception.NroCajaYaExistenteException;
-import com.unq.eis.apibancaria.exception.UsuarioInexistenteException;
+import com.unq.eis.apibancaria.exception.*;
 import com.unq.eis.apibancaria.modelo.Caja;
 import com.unq.eis.apibancaria.modelo.TipoCaja;
 import com.unq.eis.apibancaria.modelo.Usuario;
@@ -18,6 +15,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -191,6 +190,95 @@ public class CajaServiceImplTest {
         assertThrows(CajaInexistenteException.class, () ->{serviceCaja.eliminar(cajaTest1.getIdCaja());});
     }
 
+    @Test
+    public void DepositarDineroEnCuentaExitoso(){
+        serviceUsuario.crear(usuarioTest1);
+        serviceCaja.crear(cajaTest1);
+
+        assertEquals(0, cajaTest1.getSaldo().compareTo(BigDecimal.ZERO));
+
+        serviceCaja.depositar(cajaTest1.getIdCaja(), BigDecimal.valueOf(100L));
+
+        cajaTest2 = serviceCaja.recuperar(cajaTest1.getIdCaja());
+
+        assertEquals(0, cajaTest2.getSaldo().compareTo(BigDecimal.valueOf(100L)));
+
+    }
+
+    @Test
+    public void ErrorDepositarDineroConMontoMenorEIgualACero(){
+        serviceUsuario.crear(usuarioTest1);
+        serviceCaja.crear(cajaTest1);
+
+        assertEquals(0, cajaTest1.getSaldo().compareTo(BigDecimal.ZERO));
+
+        assertThrows(MontoInvalidoException.class, () -> {serviceCaja.depositar(cajaTest1.getIdCaja(),BigDecimal.ZERO);});
+        assertThrows(MontoInvalidoException.class, () -> {serviceCaja.depositar(cajaTest1.getIdCaja(),BigDecimal.valueOf(-1L));});
+
+    }
+
+    @Test
+    public void ErrorDepositarDineroConCajaSinId(){
+
+        assertThrows(CajaInexistenteException.class, () -> {serviceCaja.depositar(null, BigDecimal.ONE);});
+    }
+
+    @Test
+    public void ErrorDepositarDineroConCajaConIdNoPersistido(){
+
+        cajaTest1.setNroCaja(1L);
+
+        assertThrows(CajaInexistenteException.class, () -> {serviceCaja.depositar(null, BigDecimal.ONE);});
+    }
+
+    @Test
+    public void RetirarDineroDeCajaExitoso(){
+
+        serviceUsuario.crear(usuarioTest1);
+        serviceCaja.crear(cajaTest1);
+
+        serviceCaja.depositar(cajaTest1.getIdCaja(), BigDecimal.valueOf(100L));
+
+        serviceCaja.retirar(cajaTest1.getIdCaja(), BigDecimal.valueOf(50L));
+
+        cajaTest2 = serviceCaja.recuperar(cajaTest1.getIdCaja());
+
+        assertEquals(0, cajaTest2.getSaldo().compareTo(BigDecimal.valueOf(50L)));
+    }
+
+    @Test
+    public void ErrorRetirarDineroDeCajaConMontoMenorEIgualACero(){
+        serviceUsuario.crear(usuarioTest1);
+        serviceCaja.crear(cajaTest1);
+
+        assertThrows(MontoInvalidoException.class, () -> {serviceCaja.retirar(cajaTest1.getIdCaja(),BigDecimal.ZERO);});
+        assertThrows(MontoInvalidoException.class, () -> {serviceCaja.retirar(cajaTest1.getIdCaja(),BigDecimal.valueOf(-1L));});
+    }
+
+    @Test
+    public void ErrorRetirarDineroDeCajaConSaldoInsuficiente(){
+
+        serviceUsuario.crear(usuarioTest1);
+        serviceCaja.crear(cajaTest1);
+
+        assertEquals(0, cajaTest1.getSaldo().compareTo(BigDecimal.ZERO));
+
+        assertThrows(SaldoInsuficienteException.class, () -> {serviceCaja.retirar(cajaTest1.getIdCaja(),BigDecimal.ONE);});
+    }
+
+    @Test
+    public void ErrorRetirarDineroConCajaSinId(){
+
+        assertThrows(CajaInexistenteException.class, () -> {serviceCaja.retirar(null,BigDecimal.ONE);});
+    }
+
+    @Test
+    public void ErrorRetirarDineroConCajaConIdSinPersistir(){
+
+        cajaTest1.setIdCaja(1L);
+
+        assertThrows(CajaInexistenteException.class, () ->{serviceCaja.retirar(cajaTest1.getIdCaja(), BigDecimal.ONE);});
+    }
     @AfterEach
     void cleanup() {
         cajaDAO.deleteAll();

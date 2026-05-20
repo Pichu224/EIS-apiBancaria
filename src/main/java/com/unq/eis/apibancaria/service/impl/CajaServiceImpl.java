@@ -13,6 +13,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+
 @Service
 @Transactional
 @AllArgsConstructor
@@ -29,21 +31,16 @@ public class CajaServiceImpl implements CajaService {
 
     @Override
     public Caja recuperar(Long idCaja){
-        if (idCaja == null) {
-            throw new CajaInexistenteException("El id no puede ser null");
-        }
-        return cajaDao.findById(idCaja).orElseThrow(() -> new CajaInexistenteException("Caja no encontrada!"));
+        this.validarIdCaja(idCaja);
+        return this.recuperarCajaDeBD(idCaja);
     }
 
     @Override
-    public Caja actualizar(Long id, Caja caja){ // Solo se puede actualizar el nroCaja, Alias y TipodeCaja.
+    public Caja actualizar(Long idCaja, Caja caja){ // Solo se puede actualizar el nroCaja, Alias y TipodeCaja.
 
-        if ( id == null) {
-            throw new CajaInexistenteException("El id no puede ser null");
-        }
+        this.validarIdCaja(idCaja);
 
-        Caja cajaRecuperada = cajaDao.findById(id)
-                .orElseThrow( () -> new CajaInexistenteException("Caja no encontrada."));
+        Caja cajaRecuperada = this.recuperarCajaDeBD(idCaja);
 
         if(!(cajaRecuperada.getNroCaja().equals(caja.getNroCaja())) && cajaDao.existsByNroCaja(caja.getNroCaja())){
             throw new NroCajaYaExistenteException("Ya existe una caja con ese número asignado.");
@@ -57,7 +54,7 @@ public class CajaServiceImpl implements CajaService {
         cajaRecuperada.setAlias(caja.getAlias());
         cajaRecuperada.setTipoCaja(caja.getTipoCaja());
 
-        return cajaDao.save(cajaRecuperada);
+        return cajaRecuperada;
 
     }
 
@@ -67,6 +64,27 @@ public class CajaServiceImpl implements CajaService {
             throw new CajaInexistenteException("Caja no encontrada");
         }
         cajaDao.deleteById(idCaja);
+    }
+
+    @Override
+    public void depositar(Long idCaja, BigDecimal monto){
+
+        this.validarIdCaja(idCaja);
+
+        Caja cajaDepositar = this.recuperarCajaDeBD(idCaja);
+
+        cajaDepositar.depositar(monto);
+
+    }
+
+    @Override
+    public void retirar(Long idCaja, BigDecimal monto){
+
+        this.validarIdCaja(idCaja);
+
+        Caja cajaRetirar = this.recuperarCajaDeBD(idCaja);
+
+        cajaRetirar.retirar(monto);
     }
 
     private void validarCreacionCaja(Caja caja){
@@ -84,5 +102,15 @@ public class CajaServiceImpl implements CajaService {
         if(cajaDao.existsByAlias(caja.getAlias())){
             throw new AliasYaExistenteException("Ya existe el alias ingresado");
         }
+    }
+
+    private void validarIdCaja(Long id){
+        if ( id == null) {
+            throw new CajaInexistenteException("El id no puede ser null");
+        }
+    }
+
+    private Caja recuperarCajaDeBD(Long idCaja){
+        return cajaDao.findById(idCaja).orElseThrow(() -> new CajaInexistenteException("Caja no encontrada!"));
     }
 }

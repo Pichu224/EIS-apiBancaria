@@ -27,9 +27,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     @Transactional(readOnly = true)
     public Usuario recuperar(Long idUsuario) {
-        if (idUsuario == null) {
-            throw new UsuarioInexistenteException("El id no puede ser null");
-        }
+        this.validarIdUsuario(idUsuario);
         return usuarioDao.findById(idUsuario)
                 .orElseThrow(() -> new UsuarioInexistenteException("Usuario no encontrado"));
     }
@@ -37,9 +35,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public Usuario actualizar(Long id, Usuario usuario) {
 
-        if ( id == null) {
-            throw new UsuarioInexistenteException("El id no puede ser null");
-        }
+        this.validarIdUsuario(id);
 
         Usuario existente = usuarioDao.findById(id)
                 .orElseThrow(() -> new UsuarioInexistenteException("Usuario no encontrado"));
@@ -57,7 +53,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         existente.setApellido(usuario.getApellido());
         existente.setDni(usuario.getDni());
 
-        return usuarioDao.save(existente);
+        return existente;
     }
 
     @Override
@@ -66,5 +62,11 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new UsuarioInexistenteException("Usuario no encontrado");
         }
         usuarioDao.deleteById(idUsuario);
+    }
+
+    private void validarIdUsuario(Long idUsuario){
+        if (idUsuario == null) {
+            throw new UsuarioInexistenteException("El id no puede ser null");
+        }
     }
 }
