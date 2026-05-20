@@ -37,6 +37,10 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public Usuario actualizar(Long id, Usuario usuario) {
 
+        if ( id == null) {
+            throw new UsuarioInexistenteException("El id no puede ser null");
+        }
+
         Usuario existente = usuarioDao.findById(id)
                 .orElseThrow(() -> new UsuarioInexistenteException("Usuario no encontrado"));
 

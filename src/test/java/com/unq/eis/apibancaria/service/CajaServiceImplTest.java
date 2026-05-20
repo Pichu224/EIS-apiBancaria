@@ -128,7 +128,7 @@ public class CajaServiceImplTest {
         cajaTest1.setAlias("nico.vaqui.api");
         cajaTest1.setTipoCaja(TipoCaja.CajaCorriente);
 
-        serviceCaja.actualizar(cajaTest1);
+        serviceCaja.actualizar(cajaTest1.getIdCaja(),cajaTest1);
 
         cajaTest3 = serviceCaja.recuperar(cajaTest1.getIdCaja());
 
@@ -141,9 +141,9 @@ public class CajaServiceImplTest {
     @Test
     public void ErrorActualizarCajaSinIdYConIdInexistente(){
 
-        assertThrows(CajaInexistenteException.class, () -> {serviceCaja.actualizar(cajaTest1);});
+        assertThrows(CajaInexistenteException.class, () -> {serviceCaja.actualizar(null,cajaTest1);});
         cajaTest1.setIdCaja(1L);
-        assertThrows(CajaInexistenteException.class, () -> {serviceCaja.actualizar(cajaTest1);});
+        assertThrows(CajaInexistenteException.class, () -> {serviceCaja.actualizar(1L,cajaTest1);});
     }
 
     @Test
@@ -156,7 +156,7 @@ public class CajaServiceImplTest {
 
         cajaTest1.setNroCaja(cajaTest2.getNroCaja());
 
-        assertThrows(NroCajaYaExistenteException.class, () -> {serviceCaja.actualizar(cajaTest1);});
+        assertThrows(NroCajaYaExistenteException.class, () -> {serviceCaja.actualizar(cajaTest1.getIdCaja(),cajaTest1);});
 
     }
 
@@ -170,7 +170,7 @@ public class CajaServiceImplTest {
 
         cajaTest1.setAlias(cajaTest2.getAlias());
 
-        assertThrows(AliasYaExistenteException.class, () -> {serviceCaja.actualizar(cajaTest1);});
+        assertThrows(AliasYaExistenteException.class, () -> {serviceCaja.actualizar(cajaTest1.getIdCaja(),cajaTest1);});
     }
 
     @Test

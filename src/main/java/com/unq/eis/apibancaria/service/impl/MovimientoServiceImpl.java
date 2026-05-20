@@ -16,7 +16,7 @@ public class MovimientoServiceImpl implements MovimientoService {
 
     @Override
     public Movimiento crear(Movimiento movimiento){
-
+        return null;
     }
     @Override
     public Movimiento recuperar(Long idMovimiento){
@@ -24,7 +24,7 @@ public class MovimientoServiceImpl implements MovimientoService {
     }
     @Override
     public Movimiento actualizar(Long id, Movimiento movimiento){
-
+        return null;
     }
     @Override
     public void eliminar(Long idMovimiento){

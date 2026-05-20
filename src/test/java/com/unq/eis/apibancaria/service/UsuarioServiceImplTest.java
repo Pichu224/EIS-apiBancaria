@@ -61,7 +61,7 @@ public class UsuarioServiceImplTest {
         usuarioTest1.setApellido("Vaqui");
         usuarioTest1.setDni("40.321.654");
 
-        serviceUsuario.actualizar(usuarioTest1);
+        serviceUsuario.actualizar(usuarioTest1.getIdUsuario(),usuarioTest1);
 
         usuarioTest2 = serviceUsuario.recuperar(usuarioTest1.getIdUsuario());
 
@@ -78,7 +78,7 @@ public class UsuarioServiceImplTest {
     public void ActualizarFallaPorUsuarioNoPersistido(){
         usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
 
-        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.actualizar(usuarioTest1));
+        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.actualizar(null,usuarioTest1));
     }
 
     @Test
@@ -86,7 +86,7 @@ public class UsuarioServiceImplTest {
         usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
         usuarioTest1.setIdUsuario(100L);
 
-        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.actualizar(usuarioTest1));
+        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.actualizar(usuarioTest1.getIdUsuario(),usuarioTest1));
     }
     @Test
     public void ActualizarFallaPorMailYaExistenPorOtroUsuario(){
@@ -98,7 +98,7 @@ public class UsuarioServiceImplTest {
 
         usuarioTest2.setEmail(usuarioTest1.getEmail());
 
-        assertThrows(EmailYaExistenteException.class, ()->{serviceUsuario.actualizar(usuarioTest2);});
+        assertThrows(EmailYaExistenteException.class, ()->{serviceUsuario.actualizar(usuarioTest2.getIdUsuario(),usuarioTest2);});
     }
 
     @Test

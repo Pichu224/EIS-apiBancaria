@@ -17,7 +17,7 @@ public class TransferenciaServiceImpl implements TransferenciaService {
 
     @Override
     public Transferencia crear(Transferencia transferencia){
-
+        return null;
     }
 
     @Override
@@ -27,7 +27,7 @@ public class TransferenciaServiceImpl implements TransferenciaService {
 
     @Override
     public Transferencia actualizar(Long id, Transferencia transferencia){
-
+        return null;
     }
 
     @Override

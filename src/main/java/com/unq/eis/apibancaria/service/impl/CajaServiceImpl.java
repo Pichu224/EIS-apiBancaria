@@ -38,6 +38,10 @@ public class CajaServiceImpl implements CajaService {
     @Override
     public Caja actualizar(Long id, Caja caja){ // Solo se puede actualizar el nroCaja, Alias y TipodeCaja.
 
+        if ( id == null) {
+            throw new CajaInexistenteException("El id no puede ser null");
+        }
+
         Caja cajaRecuperada = cajaDao.findById(id)
                 .orElseThrow( () -> new CajaInexistenteException("Caja no encontrada."));
 
