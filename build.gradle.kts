@@ -31,6 +31,10 @@ dependencies {
 	runtimeOnly("org.postgresql:postgresql")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.springframework.boot:spring-boot-test-autoconfigure")
+	testImplementation("com.h2database:h2")
+	testImplementation("org.mockito:mockito-core:5.8.0")
+	testImplementation("org.mockito:mockito-junit-jupiter:5.8.0")
 
 	testCompileOnly("org.projectlombok:lombok")
 	testAnnotationProcessor("org.projectlombok:lombok")
