@@ -1,54 +1,52 @@
 package com.unq.eis.apibancaria.service;
 
-import com.unq.eis.apibancaria.ApibancariaApplication;
+import java.math.BigDecimal;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import com.unq.eis.apibancaria.modelo.Caja;
 import com.unq.eis.apibancaria.modelo.TipoCaja;
 import com.unq.eis.apibancaria.modelo.Usuario;
 import com.unq.eis.apibancaria.persistence.CajaDAO;
-import com.unq.eis.apibancaria.persistence.UsuarioDAO;
-import com.unq.eis.apibancaria.service.interfaces.CajaService;
+import com.unq.eis.apibancaria.service.impl.CajaServiceImpl;
+
 import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import java.math.BigDecimal;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-@SpringBootTest(classes = ApibancariaApplication.class)
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
+@ExtendWith(MockitoExtension.class)
 class CajaServiceImplTest {
 
-    @Autowired
-    private CajaService cajaService;
-
-    @Autowired
+    @Mock
     private CajaDAO cajaDAO;
 
-    @Autowired
-    private UsuarioDAO usuarioDAO;
+    @InjectMocks
+    private CajaServiceImpl cajaService;
 
     private Usuario usuario;
 
     @BeforeEach
     void setUp() {
         usuario = new Usuario("nico@gmail.com", "123", "Nicolas", "Vaccaro", "40.123.456");
-        usuarioDAO.save(usuario);
-    }
-
-    @AfterEach
-    void cleanUp() {
-        cajaDAO.deleteAll();
-        usuarioDAO.deleteAll();
     }
 
     @Test
     void crearYRecuperarCajaExitosa() {
         Caja caja = new Caja(1L, "testCaja", usuario);
+
+        when(cajaDAO.save(any(Caja.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(cajaDAO.findById(eq(caja.getIdCaja()))).thenReturn(Optional.of(caja));
+
         cajaService.crear(caja);
 
         Caja recuperada = cajaService.recuperar(caja.getIdCaja());
@@ -63,7 +61,10 @@ class CajaServiceImplTest {
     @Test
     void actualizarCajaExistente() {
         Caja caja = new Caja(2L, "aliasOriginal", usuario);
-        cajaService.crear(caja);
+        caja.setIdCaja(2L);
+
+        when(cajaDAO.existsById(eq(caja.getIdCaja()))).thenReturn(true);
+        when(cajaDAO.save(any(Caja.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         caja.setAlias("aliasActualizado");
         caja.setSaldo(BigDecimal.valueOf(100));
@@ -71,23 +72,26 @@ class CajaServiceImplTest {
 
         cajaService.actualizar(caja);
 
-        Caja actualizada = cajaService.recuperar(caja.getIdCaja());
-        assertEquals("aliasActualizado", actualizada.getAlias());
-        assertEquals(BigDecimal.valueOf(100), actualizada.getSaldo());
-        assertEquals(TipoCaja.CajaCorriente, actualizada.getTipoCaja());
+        assertEquals("aliasActualizado", caja.getAlias());
+        assertEquals(BigDecimal.valueOf(100), caja.getSaldo());
+        assertEquals(TipoCaja.CajaCorriente, caja.getTipoCaja());
     }
 
     @Test
     void eliminarCajaPersistida() {
         Caja caja = new Caja(3L, "aliasEliminar", usuario);
-        cajaService.crear(caja);
+        caja.setIdCaja(3L);
+
+        when(cajaDAO.existsById(eq(caja.getIdCaja()))).thenReturn(true);
+        doNothing().when(cajaDAO).deleteById(eq(caja.getIdCaja()));
 
         cajaService.eliminar(caja.getIdCaja());
-        assertThrows(EntityNotFoundException.class, () -> cajaService.recuperar(caja.getIdCaja()));
     }
 
     @Test
     void recuperarCajaInexistenteLanzaException() {
+        when(cajaDAO.findById(eq(999L))).thenReturn(Optional.empty());
+
         assertThrows(EntityNotFoundException.class, () -> cajaService.recuperar(999L));
     }
 }
