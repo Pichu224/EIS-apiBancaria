@@ -9,6 +9,7 @@ import com.unq.eis.apibancaria.persistence.CajaDAO;
 import com.unq.eis.apibancaria.persistence.UsuarioDAO;
 import com.unq.eis.apibancaria.service.impl.CajaServiceImpl;
 import com.unq.eis.apibancaria.service.impl.UsuarioServiceImpl;
+import jakarta.persistence.Id;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,7 +71,7 @@ public class CajaServiceImplTest {
     @Test
     public void ErrorCrearCajaConUsuarioNoPersistido(){
 
-        assertThrows(UsuarioInexistenteException.class, () -> {serviceCaja.crear(cajaTest2);});
+        assertThrows(IdNuloException.class, () -> {serviceCaja.crear(cajaTest2);});
 
     }
     @Test
@@ -108,7 +109,7 @@ public class CajaServiceImplTest {
     @Test
     public void ErrorRecuperarCajaSinPersistir(){
 
-        assertThrows(CajaInexistenteException.class, () -> {serviceCaja.recuperar(cajaTest1.getIdCaja());});
+        assertThrows(IdNuloException.class, () -> {serviceCaja.recuperar(cajaTest1.getIdCaja());});
     }
 
     @Test
@@ -140,7 +141,7 @@ public class CajaServiceImplTest {
     @Test
     public void ErrorActualizarCajaSinIdYConIdInexistente(){
 
-        assertThrows(CajaInexistenteException.class, () -> {serviceCaja.actualizar(null,cajaTest1);});
+        assertThrows(IdNuloException.class, () -> {serviceCaja.actualizar(null,cajaTest1);});
         cajaTest1.setIdCaja(1L);
         assertThrows(CajaInexistenteException.class, () -> {serviceCaja.actualizar(1L,cajaTest1);});
     }
@@ -220,7 +221,7 @@ public class CajaServiceImplTest {
     @Test
     public void ErrorDepositarDineroConCajaSinId(){
 
-        assertThrows(CajaInexistenteException.class, () -> {serviceCaja.depositar(null, BigDecimal.ONE);});
+        assertThrows(IdNuloException.class, () -> {serviceCaja.depositar(null, BigDecimal.ONE);});
     }
 
     @Test
@@ -228,7 +229,7 @@ public class CajaServiceImplTest {
 
         cajaTest1.setNroCaja(1L);
 
-        assertThrows(CajaInexistenteException.class, () -> {serviceCaja.depositar(null, BigDecimal.ONE);});
+        assertThrows(IdNuloException.class, () -> {serviceCaja.depositar(null, BigDecimal.ONE);});
     }
 
     @Test
@@ -269,7 +270,7 @@ public class CajaServiceImplTest {
     @Test
     public void ErrorRetirarDineroConCajaSinId(){
 
-        assertThrows(CajaInexistenteException.class, () -> {serviceCaja.retirar(null,BigDecimal.ONE);});
+        assertThrows(IdNuloException.class, () -> {serviceCaja.retirar(null,BigDecimal.ONE);});
     }
 
     @Test

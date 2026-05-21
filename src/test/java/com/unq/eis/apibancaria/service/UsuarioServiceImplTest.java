@@ -2,6 +2,7 @@ package com.unq.eis.apibancaria.service;
 
 import com.unq.eis.apibancaria.ApibancariaApplication;
 import com.unq.eis.apibancaria.exception.EmailYaExistenteException;
+import com.unq.eis.apibancaria.exception.IdNuloException;
 import com.unq.eis.apibancaria.exception.UsuarioInexistenteException;
 import com.unq.eis.apibancaria.modelo.Usuario;
 import com.unq.eis.apibancaria.persistence.UsuarioDAO;
@@ -78,7 +79,7 @@ public class UsuarioServiceImplTest {
     public void ActualizarFallaPorUsuarioNoPersistido(){
         usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
 
-        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.actualizar(null,usuarioTest1));
+        assertThrows(IdNuloException.class, () -> serviceUsuario.actualizar(null,usuarioTest1));
     }
 
     @Test
@@ -121,7 +122,7 @@ public class UsuarioServiceImplTest {
     public void RecuperarUsuarioSinSerPersistido(){
         usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
 
-        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.recuperar(usuarioTest1.getIdUsuario()));
+        assertThrows(IdNuloException.class, () -> serviceUsuario.recuperar(usuarioTest1.getIdUsuario()));
     }
 
     @Test

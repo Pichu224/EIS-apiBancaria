@@ -1,5 +1,6 @@
 package com.unq.eis.apibancaria.service.impl;
 
+import com.unq.eis.apibancaria.exception.IdNuloException;
 import com.unq.eis.apibancaria.modelo.Usuario;
 import com.unq.eis.apibancaria.exception.EmailYaExistenteException;
 import com.unq.eis.apibancaria.exception.UsuarioInexistenteException;
@@ -66,7 +67,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     private void validarIdUsuario(Long idUsuario){
         if (idUsuario == null) {
-            throw new UsuarioInexistenteException("El id no puede ser null");
+            throw new IdNuloException("El id no puede ser null");
         }
     }
 }

@@ -35,11 +35,12 @@ public class Movimiento {
     @JoinColumn(name = "id_caja", nullable = false)
     private Caja cajaUtilizada;
 
-    public Movimiento(Long nroTransferencia, Caja cajaUtilizada,String descripcion) {
+    public Movimiento(Long nroTransferencia, Caja cajaUtilizada,BigDecimal monto,String descripcion) {
         this.nroTransferencia = nroTransferencia;
         this.cajaUtilizada = cajaUtilizada;
         this.descripcion = descripcion;
-        // El resto de valores se deberan setear una vez hecha la transferencia,
-        // utilizando los setters de la clase para luego persistir como corresponde.
+        this.monto = monto;
     }
+
+    //No veo necesario hacer validaciones, ya que al ser llamado ya paso por todas validaciones de las demas clases.
 }

@@ -1,9 +1,6 @@
 package com.unq.eis.apibancaria.service.impl;
 
-import com.unq.eis.apibancaria.exception.AliasYaExistenteException;
-import com.unq.eis.apibancaria.exception.NroCajaYaExistenteException;
-import com.unq.eis.apibancaria.exception.UsuarioInexistenteException;
-import com.unq.eis.apibancaria.exception.CajaInexistenteException;
+import com.unq.eis.apibancaria.exception.*;
 import com.unq.eis.apibancaria.modelo.Caja;
 import com.unq.eis.apibancaria.modelo.Usuario;
 import com.unq.eis.apibancaria.persistence.CajaDAO;
@@ -91,7 +88,7 @@ public class CajaServiceImpl implements CajaService {
         Usuario usuarioCaja =  caja.getUsuario();
 
         if(usuarioCaja.getIdUsuario() == null ){
-            throw new UsuarioInexistenteException("El id no puede ser null");
+            throw new IdNuloException("El id no puede ser null");
         }
         if(!usuarioDAO.existsById(usuarioCaja.getIdUsuario())){
             throw new UsuarioInexistenteException("El usuario no existe!");
@@ -106,7 +103,7 @@ public class CajaServiceImpl implements CajaService {
 
     private void validarIdCaja(Long id){
         if ( id == null) {
-            throw new CajaInexistenteException("El id no puede ser null");
+            throw new IdNuloException("El id no puede ser null");
         }
     }
 

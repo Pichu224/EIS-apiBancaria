@@ -44,12 +44,12 @@ public class Transferencia {
 
     private void validarCondicionConstructor(BigDecimal montoTotal, Caja cajaOrigen, Caja cajaDestino) {
         if(montoTotal.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new MontoInvalidoException("El monto debe ser mayor a cero."); //Modificar
+            throw new MontoInvalidoException("El monto debe ser mayor a cero.");
         }
         if(cajaOrigen == null || cajaDestino == null) {
-            throw new CajasNoIngresadasException("Las cajas no pueden ser nulas."); //Modificar
+            throw new CajasNoIngresadasException("Las cajas no pueden ser nulas.");
         }
-        if(cajaOrigen.equals(cajaDestino)) { // Modificar ya que se deberia chequear por Id.
+        if(cajaOrigen.equals(cajaDestino)) { // Modificar ya que se deberia chequear por Id o por cualquier valor que poseen unicos.
             throw new CajasIgualesException(
                     "La caja origen y destino no pueden ser iguales"
             );
