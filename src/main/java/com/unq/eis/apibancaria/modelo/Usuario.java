@@ -56,6 +56,10 @@ public class Usuario {
             orphanRemoval = true)   // Permite que si se borra una caja, cuando le pegemos a la BD, este se actualiza sola al pasarle el usuario. Evitando tener que borrar la caja con otra peticion a la BD.
     private final List<Caja> cajas = new ArrayList<>();
 
+    @Column
+    @Setter
+    private Integer saldo = 0; //Long??
+
     public Usuario(String email, String contrasenia, String nombre, String apellido, String dni) {
 
         this.email = this.validarMail(email);
@@ -89,4 +93,6 @@ public class Usuario {
     public void setEmail(String email) {
         this.email = this.validarMail(email);
     }
+
+
 }

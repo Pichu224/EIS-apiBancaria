@@ -59,8 +59,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         existente.setNombre(usuario.getNombre());
         existente.setEmail(usuario.getEmail());
+        existente.setDni(usuario.getDni());
         existente.setContrasenia(usuario.getContrasenia());
         existente.setApellido(usuario.getApellido());
+        existente.setSaldo(usuario.getSaldo());
 
         usuarioDao.save(existente);
     }
@@ -73,5 +75,13 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
 
         usuarioDao.deleteById(idUsuario);
+    }
+
+    public Integer consultarSaldo(Long idUsuario){
+        if (idUsuario == null || !usuarioDao.existsById(idUsuario)) {
+            throw new UsuarioInexistenteException("Usuario no encontrado");
+        }
+
+        return usuarioDao.findById(idUsuario).get().getSaldo();
     }
 }

@@ -143,6 +143,17 @@ public class UsuarioServiceImplTest {
 
         assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.eliminar(usuarioTest1.getIdUsuario()));
     }
+    
+    @Test
+    public void ConsultarSaldoPersistido(){
+        usuarioTest1 = new Usuario("lautiv@gmail.com","777","Lautaro","Vildoza","12.345.678");
+        serviceUsuario.crear(usuarioTest1);
+        usuarioTest1.setSaldo(3000);
+        assertEquals(3000, usuarioTest1.getSaldo());
+        serviceUsuario.actualizar(usuarioTest1);
+        usuarioTest2 = serviceUsuario.recuperar(usuarioTest1.getIdUsuario());
+        assertEquals(usuarioTest1.getSaldo(), usuarioTest2.getSaldo());
+    }
 
     @AfterEach
     void cleanup() {

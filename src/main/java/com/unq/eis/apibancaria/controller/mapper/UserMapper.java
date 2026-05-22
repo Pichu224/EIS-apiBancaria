@@ -19,7 +19,8 @@ public class UserMapper {
         return new UsuarioResponse(
                 modelo.getIdUsuario(),
                 modelo.getEmail(),
-                modelo.getContrasenia()
+                modelo.getContrasenia(),
+                modelo.getSaldo()
         );
     }
 

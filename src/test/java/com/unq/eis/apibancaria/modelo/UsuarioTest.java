@@ -54,4 +54,12 @@ public class UsuarioTest {
         assertNotEquals("Vaccaro", userTest.getApellido());
         assertNotEquals("40.123.456", userTest.getDni());
     }
+
+    @Test
+    public void ConsultarSaldo(){
+        userTest.setIdUsuario(1L);
+        assertEquals(0,userTest.getSaldo());
+        userTest.setSaldo(20000);
+        assertEquals(20000, userTest.getSaldo());
+    }
 }
