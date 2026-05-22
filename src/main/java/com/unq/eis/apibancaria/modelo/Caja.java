@@ -39,7 +39,7 @@ public class Caja {
     private TipoCaja tipoCaja;
 
     @Column(nullable = false, precision = 15, scale = 2)
-    private BigDecimal saldo;
+    private BigDecimal saldo; //Int??
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario", nullable = false)

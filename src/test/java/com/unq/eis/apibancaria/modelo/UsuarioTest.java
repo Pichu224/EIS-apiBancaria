@@ -1,9 +1,13 @@
 package com.unq.eis.apibancaria.modelo;
 
+import com.unq.eis.apibancaria.exception.CajaInexistenteException;
 import com.unq.eis.apibancaria.exception.ContraseniaVaciaException;
 import com.unq.eis.apibancaria.exception.MailInvalidoException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.support.CustomSQLErrorCodesTranslation;
+
+import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -53,5 +57,16 @@ public class UsuarioTest {
         assertNotEquals("Nicolas", userTest.getNombre());
         assertNotEquals("Vaccaro", userTest.getApellido());
         assertNotEquals("40.123.456", userTest.getDni());
+    }
+
+    @Test
+    public void ConsultarSaldoDeUnaCaja(){
+        userTest.setIdUsuario(1L);
+        Caja caja = new Caja(1L,"testCaja",userTest);
+        assertThrows(CajaInexistenteException.class, () -> userTest.consultarSaldo(caja));
+        userTest.addCaja( caja );
+        assertEquals(BigDecimal.ZERO, userTest.consultarSaldo(caja));
+        caja.depositar(BigDecimal.TEN);
+        assertEquals(BigDecimal.TEN, userTest.consultarSaldo(caja));
     }
 }

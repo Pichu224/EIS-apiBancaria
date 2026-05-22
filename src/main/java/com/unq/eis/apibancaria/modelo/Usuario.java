@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,5 +89,20 @@ public class Usuario {
 
     public void setEmail(String email) {
         this.email = this.validarMail(email);
+    }
+
+    public void addCaja(Caja caja){
+        this.cajas.add(caja);
+    }
+
+    public void removeCaja(Caja caja){
+        this.cajas.remove(caja);
+    }
+
+    public BigDecimal consultarSaldo(Caja caja) {
+        if (caja != null && !cajas.contains(caja)) {
+            throw new CajaInexistenteException("No exite la caja");
+        }
+        return caja.getSaldo();
     }
 }
