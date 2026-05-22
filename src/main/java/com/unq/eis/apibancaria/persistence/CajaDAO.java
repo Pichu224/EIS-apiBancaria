@@ -6,4 +6,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CajaDAO extends JpaRepository<Caja, Long> {
+
+    boolean existsByNroCaja(Long nroCaja);
+
+    boolean existsByAlias(String alias);
 }

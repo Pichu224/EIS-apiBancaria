@@ -2,13 +2,12 @@ package com.unq.eis.apibancaria.service;
 
 import com.unq.eis.apibancaria.ApibancariaApplication;
 import com.unq.eis.apibancaria.exception.EmailYaExistenteException;
+import com.unq.eis.apibancaria.exception.IdNuloException;
 import com.unq.eis.apibancaria.exception.UsuarioInexistenteException;
 import com.unq.eis.apibancaria.modelo.Usuario;
 import com.unq.eis.apibancaria.persistence.UsuarioDAO;
 import com.unq.eis.apibancaria.service.impl.UsuarioServiceImpl;
-import com.unq.eis.apibancaria.service.interfaces.UsuarioService;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class UsuarioServiceImplTest {
 
     @Autowired
-    private UsuarioService serviceUsuario;
+    private UsuarioServiceImpl serviceUsuario;
 
     @Autowired
     private UsuarioDAO usuarioDAO;
@@ -28,10 +27,6 @@ public class UsuarioServiceImplTest {
     private Usuario usuarioTest1;
     private Usuario usuarioTest2;
 
-    @BeforeEach
-    void setUp(){
-        serviceUsuario = new UsuarioServiceImpl(usuarioDAO);
-    }
 
     @Test
     public void CreacionyRecuperarDelUsuarioExitosa(){
@@ -67,7 +62,7 @@ public class UsuarioServiceImplTest {
         usuarioTest1.setApellido("Vaqui");
         usuarioTest1.setDni("40.321.654");
 
-        serviceUsuario.actualizar(usuarioTest1);
+        serviceUsuario.actualizar(usuarioTest1.getIdUsuario(),usuarioTest1);
 
         usuarioTest2 = serviceUsuario.recuperar(usuarioTest1.getIdUsuario());
 
@@ -84,7 +79,7 @@ public class UsuarioServiceImplTest {
     public void ActualizarFallaPorUsuarioNoPersistido(){
         usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
 
-        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.actualizar(usuarioTest1));
+        assertThrows(IdNuloException.class, () -> serviceUsuario.actualizar(null,usuarioTest1));
     }
 
     @Test
@@ -92,7 +87,19 @@ public class UsuarioServiceImplTest {
         usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
         usuarioTest1.setIdUsuario(100L);
 
-        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.actualizar(usuarioTest1));
+        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.actualizar(usuarioTest1.getIdUsuario(),usuarioTest1));
+    }
+    @Test
+    public void ActualizarFallaPorMailYaExistenPorOtroUsuario(){
+        usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
+        usuarioTest2 = new Usuario("nico@yahoo.com","456","Nicolas","Vaccaro","40.777.456");
+
+        serviceUsuario.crear(usuarioTest1);
+        serviceUsuario.crear(usuarioTest2);
+
+        usuarioTest2.setEmail(usuarioTest1.getEmail());
+
+        assertThrows(EmailYaExistenteException.class, ()->{serviceUsuario.actualizar(usuarioTest2.getIdUsuario(),usuarioTest2);});
     }
 
     @Test
@@ -115,7 +122,7 @@ public class UsuarioServiceImplTest {
     public void RecuperarUsuarioSinSerPersistido(){
         usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
 
-        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.recuperar(usuarioTest1.getIdUsuario()));
+        assertThrows(IdNuloException.class, () -> serviceUsuario.recuperar(usuarioTest1.getIdUsuario()));
     }
 
     @Test

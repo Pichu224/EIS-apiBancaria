@@ -1,53 +1,44 @@
 package com.unq.eis.apibancaria.service.impl;
 
+import com.unq.eis.apibancaria.exception.IdNuloException;
 import com.unq.eis.apibancaria.modelo.Usuario;
 import com.unq.eis.apibancaria.exception.EmailYaExistenteException;
 import com.unq.eis.apibancaria.exception.UsuarioInexistenteException;
 import com.unq.eis.apibancaria.persistence.UsuarioDAO;
 import com.unq.eis.apibancaria.service.interfaces.UsuarioService;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioDAO usuarioDao;
 
-    public UsuarioServiceImpl(UsuarioDAO usuarioDao) {
-        this.usuarioDao = usuarioDao;
-    }
-
     @Override
-    public void crear(Usuario usuario) {
-
+    public Usuario crear(Usuario usuario) {
         if (usuarioDao.existsByEmail(usuario.getEmail())) {
             throw new EmailYaExistenteException("Ya existe un usuario con ese email");
         }
-
-        usuarioDao.save(usuario);
+        return usuarioDao.save(usuario);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Usuario recuperar(Long idUsuario) {
-
-        if (idUsuario == null) {
-            throw new UsuarioInexistenteException("El id no puede ser null");
-        }
-
+        this.validarIdUsuario(idUsuario);
         return usuarioDao.findById(idUsuario)
                 .orElseThrow(() -> new UsuarioInexistenteException("Usuario no encontrado"));
     }
 
     @Override
-    public void actualizar(Usuario usuario) {
+    public Usuario actualizar(Long id, Usuario usuario) {
 
-        if (usuario.getIdUsuario() == null) {
-            throw new UsuarioInexistenteException("El usuario no tiene id");
-        }
+        this.validarIdUsuario(id);
 
-        Usuario existente = usuarioDao.findById(usuario.getIdUsuario())
+        Usuario existente = usuarioDao.findById(id)
                 .orElseThrow(() -> new UsuarioInexistenteException("Usuario no encontrado"));
 
         // Validar email si cambió
@@ -63,16 +54,20 @@ public class UsuarioServiceImpl implements UsuarioService {
         existente.setApellido(usuario.getApellido());
         existente.setDni(usuario.getDni());
 
-        usuarioDao.save(existente);
+        return existente;
     }
 
     @Override
     public void eliminar(Long idUsuario) {
-
         if (idUsuario == null || !usuarioDao.existsById(idUsuario)) {
             throw new UsuarioInexistenteException("Usuario no encontrado");
         }
-
         usuarioDao.deleteById(idUsuario);
+    }
+
+    private void validarIdUsuario(Long idUsuario){
+        if (idUsuario == null) {
+            throw new IdNuloException("El id no puede ser null");
+        }
     }
 }

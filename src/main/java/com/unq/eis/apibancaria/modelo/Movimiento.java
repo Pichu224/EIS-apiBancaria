@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = "cajaUtilizada")
-
 public class Movimiento {
 
     @Id
@@ -25,9 +24,8 @@ public class Movimiento {
     private BigDecimal monto;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime fechaRealizado;
+    private LocalDateTime fechaRealizado = LocalDateTime.now();
 
-    @Column()
     private String descripcion;
 
     @Column(nullable = false)
@@ -37,12 +35,12 @@ public class Movimiento {
     @JoinColumn(name = "id_caja", nullable = false)
     private Caja cajaUtilizada;
 
-    public Movimiento(Long nroTransferencia, Caja cajaUtilizada,String descripcion) {
-
-        // El resto de valores se deberan setear una vez hecha la transferenci,
-        // utilizando los setters de la clase para luego persistir como corresponde.
+    public Movimiento(Long nroTransferencia, Caja cajaUtilizada,BigDecimal monto,String descripcion) {
         this.nroTransferencia = nroTransferencia;
         this.cajaUtilizada = cajaUtilizada;
         this.descripcion = descripcion;
+        this.monto = monto;
     }
+
+    //No veo necesario hacer validaciones, ya que al ser llamado ya paso por todas validaciones de las demas clases.
 }

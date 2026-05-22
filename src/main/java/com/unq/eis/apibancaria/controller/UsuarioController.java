@@ -43,7 +43,7 @@ public class UsuarioController {
     public ResponseEntity<UsuarioResponse> actualizarUsuario(@Valid @PathVariable Long id, @RequestBody UsuarioRequest usuarioRequest){
         Usuario usuario = UserMapper.aModelo(usuarioRequest);
         usuario.setIdUsuario(id);
-        this.usuarioService.actualizar(usuario);
+        this.usuarioService.actualizar(id, usuario);
         UsuarioResponse usuarioResponse = UserMapper.desdeModelo(usuario);
         return ResponseEntity.ok(usuarioResponse);
     }
