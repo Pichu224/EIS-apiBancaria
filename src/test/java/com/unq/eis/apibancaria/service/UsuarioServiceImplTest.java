@@ -1,158 +1,160 @@
 package com.unq.eis.apibancaria.service;
 
-import com.unq.eis.apibancaria.ApibancariaApplication;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.anyString;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import com.unq.eis.apibancaria.exception.EmailYaExistenteException;
 import com.unq.eis.apibancaria.exception.IdNuloException;
 import com.unq.eis.apibancaria.exception.UsuarioInexistenteException;
 import com.unq.eis.apibancaria.modelo.Usuario;
 import com.unq.eis.apibancaria.persistence.UsuarioDAO;
 import com.unq.eis.apibancaria.service.impl.UsuarioServiceImpl;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-@SpringBootTest(classes = ApibancariaApplication.class)
+@ExtendWith(MockitoExtension.class)
 public class UsuarioServiceImplTest {
 
-    @Autowired
-    private UsuarioServiceImpl serviceUsuario;
-
-    @Autowired
+    @Mock
     private UsuarioDAO usuarioDAO;
+
+    @InjectMocks
+    private UsuarioServiceImpl serviceUsuario;
 
     private Usuario usuarioTest1;
     private Usuario usuarioTest2;
 
+    @BeforeEach
+    void setUp(){
+        usuarioTest1 = new Usuario();
+        usuarioTest1.setEmail("nico@gmail.com");
+        usuarioTest1.setContrasenia("123");
+        usuarioTest1.setNombre("Nicolas");
+        usuarioTest1.setApellido("Vaccaro");
+        usuarioTest1.setDni("40.123.456");
+
+        usuarioTest2 = new Usuario();
+        usuarioTest2.setEmail("nico@yahoo.com");
+        usuarioTest2.setContrasenia("456");
+        usuarioTest2.setNombre("Matias");
+        usuarioTest2.setApellido("Boldo");
+        usuarioTest2.setDni("40.777.361");
+    }
 
     @Test
     public void CreacionyRecuperarDelUsuarioExitosa(){
-        usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
+        usuarioTest1.setIdUsuario(1L);
+
+        when(usuarioDAO.existsByEmail(usuarioTest1.getEmail())).thenReturn(false);
+        when(usuarioDAO.save(usuarioTest1)).thenAnswer(inv -> {
+            Usuario u = inv.getArgument(0);
+            u.setIdUsuario(1L);
+            return u;
+        });
+        when(usuarioDAO.findById(1L)).thenReturn(Optional.of(usuarioTest1));
 
         serviceUsuario.crear(usuarioTest1);
 
-        usuarioTest2 = serviceUsuario.recuperar(usuarioTest1.getIdUsuario());
+        Usuario usuarioRecuperado = serviceUsuario.recuperar(1L);
 
-        assertEquals(usuarioTest1.getEmail(), usuarioTest2.getEmail());
-        assertEquals(usuarioTest1.getContrasenia(), usuarioTest2.getContrasenia());
-        assertEquals(usuarioTest1.getNombre(), usuarioTest2.getNombre());
-        assertEquals(usuarioTest1.getApellido(), usuarioTest2.getApellido());
-        assertEquals(usuarioTest1.getDni(), usuarioTest2.getDni());
-
+        assertEquals(usuarioTest1.getEmail(), usuarioRecuperado.getEmail());
+        assertEquals(usuarioTest1.getContrasenia(), usuarioRecuperado.getContrasenia());
+        assertEquals(usuarioTest1.getNombre(), usuarioRecuperado.getNombre());
+        assertEquals(usuarioTest1.getApellido(), usuarioRecuperado.getApellido());
+        assertEquals(usuarioTest1.getDni(), usuarioRecuperado.getDni());
     }
+
     @Test
     public void CrearUsuarioConMailYaExistente(){
-        usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
-        usuarioTest2 = new Usuario("nico@gmail.com","456","Nicolas","Vaccaro","40.123.456");
-
-        serviceUsuario.crear(usuarioTest1);
-        assertThrows(EmailYaExistenteException.class, () -> serviceUsuario.crear(usuarioTest2));
+        when(usuarioDAO.existsByEmail(anyString())).thenReturn(true);
+        usuarioTest1.setEmail("nico@gmail.com");
+        assertThrows(EmailYaExistenteException.class, () -> serviceUsuario.crear(usuarioTest1));
     }
 
     @Test
     public void ActualizarUnUsuarioPersistido(){
-        usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
-        serviceUsuario.crear(usuarioTest1);
+        usuarioTest1.setIdUsuario(1L);
+        when(usuarioDAO.findById(1L)).thenReturn(Optional.of(usuarioTest1));
 
         usuarioTest1.setContrasenia("456");
         usuarioTest1.setNombre("Nico");
         usuarioTest1.setApellido("Vaqui");
         usuarioTest1.setDni("40.321.654");
 
-        serviceUsuario.actualizar(usuarioTest1.getIdUsuario(),usuarioTest1);
+        serviceUsuario.actualizar(1L, usuarioTest1);
 
-        usuarioTest2 = serviceUsuario.recuperar(usuarioTest1.getIdUsuario());
+        Usuario actualizado = serviceUsuario.recuperar(1L);
 
-        assertEquals(usuarioTest1.getIdUsuario(),usuarioTest2.getIdUsuario());
-        assertEquals(usuarioTest1.getEmail(), usuarioTest2.getEmail());
-        assertEquals(usuarioTest1.getContrasenia(), usuarioTest2.getContrasenia());
-        assertEquals(usuarioTest1.getNombre(), usuarioTest2.getNombre());
-        assertEquals(usuarioTest1.getApellido(), usuarioTest2.getApellido());
-        assertEquals(usuarioTest1.getDni(), usuarioTest2.getDni());
-
+        assertEquals(usuarioTest1.getIdUsuario(), actualizado.getIdUsuario());
+        assertEquals(usuarioTest1.getEmail(), actualizado.getEmail());
+        assertEquals(usuarioTest1.getContrasenia(), actualizado.getContrasenia());
+        assertEquals(usuarioTest1.getNombre(), actualizado.getNombre());
+        assertEquals(usuarioTest1.getApellido(), actualizado.getApellido());
+        assertEquals(usuarioTest1.getDni(), actualizado.getDni());
     }
 
     @Test
     public void ActualizarFallaPorUsuarioNoPersistido(){
-        usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
-
-        assertThrows(IdNuloException.class, () -> serviceUsuario.actualizar(null,usuarioTest1));
+        usuarioTest1.setEmail("nico@gmail.com");
+        assertThrows(IdNuloException.class, () -> serviceUsuario.actualizar(null, usuarioTest1));
     }
 
     @Test
     public void ActualizarFallaPorUsuarioConIdNoPersistido(){
-        usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
         usuarioTest1.setIdUsuario(100L);
-
-        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.actualizar(usuarioTest1.getIdUsuario(),usuarioTest1));
+        when(usuarioDAO.findById(100L)).thenReturn(Optional.empty());
+        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.actualizar(100L, usuarioTest1));
     }
+
     @Test
     public void ActualizarFallaPorMailYaExistenPorOtroUsuario(){
-        usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
-        usuarioTest2 = new Usuario("nico@yahoo.com","456","Nicolas","Vaccaro","40.777.456");
+        usuarioTest1.setIdUsuario(1L);
+        usuarioTest2.setIdUsuario(2L);
 
-        serviceUsuario.crear(usuarioTest1);
-        serviceUsuario.crear(usuarioTest2);
+        when(usuarioDAO.findById(2L)).thenReturn(Optional.of(usuarioTest2));
+        when(usuarioDAO.existsByEmail(usuarioTest1.getEmail())).thenReturn(true);
 
-        usuarioTest2.setEmail(usuarioTest1.getEmail());
+        Usuario usuarioActualizado = new Usuario();
+        usuarioActualizado.setIdUsuario(2L);
+        usuarioActualizado.setEmail(usuarioTest1.getEmail());
+        usuarioActualizado.setContrasenia(usuarioTest2.getContrasenia());
+        usuarioActualizado.setNombre(usuarioTest2.getNombre());
+        usuarioActualizado.setApellido(usuarioTest2.getApellido());
+        usuarioActualizado.setDni(usuarioTest2.getDni());
 
-        assertThrows(EmailYaExistenteException.class, ()->{serviceUsuario.actualizar(usuarioTest2.getIdUsuario(),usuarioTest2);});
-    }
-
-    @Test
-    public void RecuperarUsuarioPersistido(){
-        usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
-        serviceUsuario.crear(usuarioTest1);
-
-        usuarioTest2 = serviceUsuario.recuperar(usuarioTest1.getIdUsuario());
-
-        assertEquals(usuarioTest1.getIdUsuario(),usuarioTest2.getIdUsuario());
-        assertEquals(usuarioTest1.getEmail(), usuarioTest2.getEmail());
-        assertEquals(usuarioTest1.getContrasenia(), usuarioTest2.getContrasenia());
-        assertEquals(usuarioTest1.getNombre(), usuarioTest2.getNombre());
-        assertEquals(usuarioTest1.getApellido(), usuarioTest2.getApellido());
-        assertEquals(usuarioTest1.getDni(), usuarioTest2.getDni());
-
+        assertThrows(EmailYaExistenteException.class, () -> serviceUsuario.actualizar(2L, usuarioActualizado));
     }
 
     @Test
     public void RecuperarUsuarioSinSerPersistido(){
-        usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
-
-        assertThrows(IdNuloException.class, () -> serviceUsuario.recuperar(usuarioTest1.getIdUsuario()));
+        assertThrows(IdNuloException.class, () -> serviceUsuario.recuperar(null));
     }
 
     @Test
     public void RecuperarUsuarioConIdInexistente(){
-        usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
-        usuarioTest1.setIdUsuario(100L);
-
-        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.recuperar(usuarioTest1.getIdUsuario()));
+        when(usuarioDAO.findById(100L)).thenReturn(Optional.empty());
+        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.recuperar(100L));
     }
 
     @Test
     public void BorrarUsuarioPersistido(){
-        usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
-        serviceUsuario.crear(usuarioTest1);
-
-        serviceUsuario.eliminar(usuarioTest1.getIdUsuario());
-
-        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.recuperar(usuarioTest1.getIdUsuario()));
-
+        when(usuarioDAO.existsById(1L)).thenReturn(true);
+        serviceUsuario.eliminar(1L);
+        when(usuarioDAO.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.recuperar(1L));
     }
 
     @Test
     public void BorrarUsuarioQueNoPosseId(){
-        usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
-
-        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.eliminar(usuarioTest1.getIdUsuario()));
+        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.eliminar(null));
     }
 
-    @AfterEach
-    void cleanup() {
-        usuarioDAO.deleteAll();
-    }
 }

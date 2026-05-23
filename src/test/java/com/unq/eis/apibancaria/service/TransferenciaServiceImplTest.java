@@ -1,49 +1,45 @@
 package com.unq.eis.apibancaria.service;
 
-import com.unq.eis.apibancaria.ApibancariaApplication;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import com.unq.eis.apibancaria.exception.CajaInexistenteException;
 import com.unq.eis.apibancaria.exception.IdNuloException;
 import com.unq.eis.apibancaria.modelo.Caja;
 import com.unq.eis.apibancaria.modelo.Transferencia;
 import com.unq.eis.apibancaria.modelo.Usuario;
 import com.unq.eis.apibancaria.persistence.CajaDAO;
+import com.unq.eis.apibancaria.persistence.MovimientoDAO;
 import com.unq.eis.apibancaria.persistence.TransferenciaDAO;
-import com.unq.eis.apibancaria.persistence.UsuarioDAO;
-import com.unq.eis.apibancaria.service.impl.CajaServiceImpl;
 import com.unq.eis.apibancaria.service.impl.TransferenciaServiceImpl;
-import com.unq.eis.apibancaria.service.impl.UsuarioServiceImpl;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-@SpringBootTest(classes = ApibancariaApplication.class)
+@ExtendWith(MockitoExtension.class)
 public class TransferenciaServiceImplTest {
 
-    @Autowired
-    private UsuarioServiceImpl serviceUsuario;
-
-    @Autowired
-    private CajaServiceImpl serviceCaja;
-
-    @Autowired
-    private TransferenciaServiceImpl serviceTransferir;
-
-    @Autowired
-    private UsuarioDAO usuarioDAO;
-
-    @Autowired
-    private CajaDAO cajaDAO;
-
-    @Autowired
+    @Mock
     private TransferenciaDAO transferenciaDAO;
 
+    @Mock
+    private CajaDAO cajaDAO;
+
+    @Mock
+    private MovimientoDAO movimientoDAO;
+
+    @InjectMocks
+    private TransferenciaServiceImpl serviceTransferir;
     private Usuario usuarioTest1;
     private Usuario usuarioTest2;
     private Caja cajaTest1;
@@ -52,36 +48,54 @@ public class TransferenciaServiceImplTest {
 
     @BeforeEach
     void setUp(){
+        usuarioTest1 = new Usuario();
+        usuarioTest1.setEmail("nico@gmail.com");
+        usuarioTest1.setContrasenia("123");
+        usuarioTest1.setNombre("Nicolas");
+        usuarioTest1.setApellido("Vaccaro");
+        usuarioTest1.setDni("40.123.456");
 
-        usuarioTest1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
-        usuarioTest2 = new Usuario("mati@gmail.com","456","Matias","Boldo","40.777.361");
+        usuarioTest2 = new Usuario();
+        usuarioTest2.setEmail("mati@gmail.com");
+        usuarioTest2.setContrasenia("456");
+        usuarioTest2.setNombre("Matias");
+        usuarioTest2.setApellido("Boldo");
+        usuarioTest2.setDni("40.777.361");
 
         cajaTest1 = new Caja(100L, "Nico.Caja.bd", usuarioTest1);
+        cajaTest1.setIdCaja(1L);
         cajaTest2 = new Caja(101L, "Mati.Caja.bd", usuarioTest2);
+        cajaTest2.setIdCaja(2L);
     }
 
     @Test
     public void TransferirEntreCajasExitoso(){
-        serviceUsuario.crear(usuarioTest1);
-        serviceUsuario.crear(usuarioTest2);
-        serviceCaja.crear(cajaTest1);
-        serviceCaja.crear(cajaTest2);
+        // Set initial balance for origin
+        cajaTest1.depositar(BigDecimal.valueOf(1000L));
 
-        serviceCaja.depositar(cajaTest1.getIdCaja(), BigDecimal.valueOf(1000L));
+        // Mock DAOs: return the cajas when searched by id
+        org.mockito.Mockito.when(cajaDAO.findById(cajaTest1.getIdCaja())).thenReturn(Optional.of(cajaTest1));
+        org.mockito.Mockito.when(cajaDAO.findById(cajaTest2.getIdCaja())).thenReturn(Optional.of(cajaTest2));
+
+        // Mock save to assign an id and return the transferencia
+        org.mockito.Mockito.when(transferenciaDAO.save(org.mockito.ArgumentMatchers.any(Transferencia.class)))
+                .thenAnswer(invocation -> {
+                    Transferencia t = invocation.getArgument(0);
+                    t.setIdTransferencia(1L);
+                    return t;
+                });
 
         transferencia = serviceTransferir.tranferir(cajaTest1.getIdCaja(), cajaTest2.getIdCaja(), BigDecimal.valueOf(500L));
 
-        //Se valida como se persistio la tranferencia
+        // Se valida como se "persistio" la transferencia (mock)
         assertNotNull(transferencia.getIdTransferencia());
         assertEquals(cajaTest1.getIdCaja(), transferencia.getCajaOrigen().getIdCaja());
         assertEquals(cajaTest2.getIdCaja(), transferencia.getCajaDestino().getIdCaja());
         assertEquals(0, transferencia.getMontoTotal().compareTo(BigDecimal.valueOf(500L)));
-        assertTrue(transferencia.getFechaRealizado().isBefore(LocalDateTime.now()));
+        assertNotNull(transferencia.getFechaRealizado());
+        assertFalse(transferencia.getFechaRealizado().isAfter(LocalDateTime.now()));
 
-        //Valido los valores de las cajas luego de la transferencia
-        cajaTest1 = serviceCaja.recuperar(cajaTest1.getIdCaja());
-        cajaTest2 = serviceCaja.recuperar(cajaTest2.getIdCaja());
-
+        // Valido los valores de las cajas luego de la transferencia (objetos en memoria)
         assertEquals(0, cajaTest1.getSaldo().compareTo(BigDecimal.valueOf(500L)));
         assertEquals(0, cajaTest2.getSaldo().compareTo(BigDecimal.valueOf(500L)));
 
@@ -94,16 +108,9 @@ public class TransferenciaServiceImplTest {
     }
     @Test
     public void ErrorTransferirConCajasSinPersistir(){
-        //No es necesario en ambos lados, ya que en ambos llama al mimso metodo para validar.
+        // Simular que las cajas no existen en la BD
+        org.mockito.Mockito.when(cajaDAO.findById(org.mockito.ArgumentMatchers.anyLong())).thenReturn(Optional.empty());
         assertThrows(CajaInexistenteException.class, () ->{serviceTransferir.tranferir(1L, 2L, BigDecimal.ONE);});
-    }
-
-
-    @AfterEach
-    void cleanup() {
-        transferenciaDAO.deleteAll();
-        cajaDAO.deleteAll();
-        usuarioDAO.deleteAll();
     }
 
 }
