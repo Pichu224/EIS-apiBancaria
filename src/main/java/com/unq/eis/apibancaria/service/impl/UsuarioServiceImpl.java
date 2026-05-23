@@ -78,6 +78,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
     }
 
+    @Override
     public BigDecimal consultarSaldo(Long idUsuario, Long idCaja){
         Usuario usuarioRec = this.recuperar(idUsuario);
         if (idCaja == null) {

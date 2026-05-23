@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 @RestController
 @RequestMapping("/usuarios")
 @AllArgsConstructor
@@ -46,5 +48,11 @@ public class UsuarioController {
         this.usuarioService.actualizar(id, usuario);
         UsuarioResponse usuarioResponse = UserMapper.desdeModelo(usuario);
         return ResponseEntity.ok(usuarioResponse);
+    }
+
+    @GetMapping("/{idUsuario}/cajas/{idCaja}/consultarSaldo")
+    public ResponseEntity<BigDecimal> consultarSaldo(@PathVariable Long idUsuario, @PathVariable Long idCaja){
+        BigDecimal saldo = usuarioService.consultarSaldo(idUsuario, idCaja);
+        return ResponseEntity.ok(saldo);
     }
 }
