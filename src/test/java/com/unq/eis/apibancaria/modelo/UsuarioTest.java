@@ -64,7 +64,7 @@ public class UsuarioTest {
         userTest.setIdUsuario(1L);
         Caja caja = new Caja(1L,"testCaja",userTest);
         assertThrows(CajaInexistenteException.class, () -> userTest.consultarSaldo(caja));
-        userTest.addCaja( caja );
+        userTest.addCaja(caja);
         assertEquals(BigDecimal.ZERO, userTest.consultarSaldo(caja));
         caja.depositar(BigDecimal.TEN);
         assertEquals(BigDecimal.TEN, userTest.consultarSaldo(caja));
