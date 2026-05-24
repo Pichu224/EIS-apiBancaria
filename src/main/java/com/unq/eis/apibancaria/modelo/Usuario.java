@@ -2,6 +2,7 @@ package com.unq.eis.apibancaria.modelo;
 
 import com.unq.eis.apibancaria.exception.*;
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -100,9 +101,20 @@ public class Usuario {
     }
 
     public BigDecimal consultarSaldo(Caja caja) {
-        if (caja != null && !cajas.contains(caja)) {
+        if (caja != null && !this.laCajaMePertenece(caja)) {
             throw new CajaInexistenteException("No exite la caja");
         }
         return caja.getSaldo();
+    }
+
+    public void ingresasDinero(BigDecimal monto, Caja caja){
+        if (!this.laCajaMePertenece(caja)) {
+            throw new CajaInexistenteException("La caja no pertenece al Usuario");
+        }
+        caja.depositar(monto);
+    }
+
+    private boolean laCajaMePertenece(Caja caja){
+        return this.getCajas().contains(caja);
     }
 }

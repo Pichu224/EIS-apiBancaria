@@ -80,13 +80,20 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public BigDecimal consultarSaldo(Long idUsuario, Long idCaja){
+        this.validarIdUsuario(idUsuario);
         Usuario usuarioRec = this.recuperar(idUsuario);
-        if (idCaja == null) {
-            throw new CajaInexistenteException("Caja no encontrada");
-        }
         Caja cajaRec = cajaDAO.findById(idCaja)
                 .orElseThrow( () -> new CajaInexistenteException("Caja no encontrada"));
         return usuarioRec.consultarSaldo(cajaRec);
+    }
+
+    @Override
+    public void ingresarSaldo(Long idUsuario, Long idCaja, BigDecimal monto){
+        this.validarIdUsuario(idUsuario);
+        Usuario usuarioRec = this.recuperar(idUsuario);
+        Caja cajaRec = cajaDAO.findById(idCaja)
+                .orElseThrow( () -> new CajaInexistenteException("Caja no encontrada"));
+        usuarioRec.ingresasDinero(monto, cajaRec);
     }
 
 }

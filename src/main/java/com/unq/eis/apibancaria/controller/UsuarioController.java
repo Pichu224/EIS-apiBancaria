@@ -55,4 +55,10 @@ public class UsuarioController {
         BigDecimal saldo = usuarioService.consultarSaldo(idUsuario, idCaja);
         return ResponseEntity.ok(saldo);
     }
+
+    @PostMapping("/{idUsuario}/cajas/{idCaja}/ingresarSaldo")
+    public ResponseEntity<Void> ingresarSaldo(@PathVariable Long idUsuario, @PathVariable Long idCaja, @RequestBody BigDecimal monto){
+        usuarioService.ingresarSaldo(idUsuario, idCaja, monto);
+        return ResponseEntity.ok().build();
+    }
 }

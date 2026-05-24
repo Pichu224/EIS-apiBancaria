@@ -69,4 +69,29 @@ public class UsuarioTest {
         caja.depositar(BigDecimal.TEN);
         assertEquals(BigDecimal.TEN, userTest.consultarSaldo(caja));
     }
+
+    @Test
+    public void IngresarDineroAUnaCajaInexistente(){
+        userTest.setIdUsuario(1L);
+        Caja caja = new Caja();
+        assertThrows(CajaInexistenteException.class, () -> userTest.ingresasDinero(BigDecimal.valueOf(1000), caja));
+    }
+
+    @Test
+    public void IngresarSaldoDeUnaCaja(){
+        userTest.setIdUsuario(1L);
+        Caja caja = new Caja(1L,"testCaja",userTest);
+        userTest.addCaja(caja);
+        assertEquals(0, userTest.consultarSaldo(caja).doubleValue());
+        userTest.ingresasDinero(BigDecimal.valueOf(1000), caja);
+        assertEquals(1000, userTest.consultarSaldo(caja).doubleValue());
+        caja.retirar(BigDecimal.valueOf(5));
+        assertEquals(995, userTest.consultarSaldo(caja).doubleValue());
+    }
+    @Test
+    public void ConsultarSaldoDeUnaCajaInexistente(){
+        userTest.setIdUsuario(1L);
+        Caja caja = new Caja();
+        assertThrows(CajaInexistenteException.class, () -> userTest.consultarSaldo(caja));
+    }
 }
