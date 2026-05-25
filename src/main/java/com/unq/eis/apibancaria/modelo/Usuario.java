@@ -2,11 +2,13 @@ package com.unq.eis.apibancaria.modelo;
 
 import com.unq.eis.apibancaria.exception.*;
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,5 +90,31 @@ public class Usuario {
 
     public void setEmail(String email) {
         this.email = this.validarMail(email);
+    }
+
+    public void addCaja(Caja caja){
+        this.cajas.add(caja);
+    }
+
+    public void removeCaja(Caja caja){
+        this.cajas.remove(caja);
+    }
+
+    public BigDecimal consultarSaldo(Caja caja) {
+        if (caja != null && !this.laCajaMePertenece(caja)) {
+            throw new CajaInexistenteException("No exite la caja");
+        }
+        return caja.getSaldo();
+    }
+
+    public void ingresasDinero(BigDecimal monto, Caja caja){
+        if (!this.laCajaMePertenece(caja)) {
+            throw new CajaInexistenteException("La caja no pertenece al Usuario");
+        }
+        caja.depositar(monto);
+    }
+
+    private boolean laCajaMePertenece(Caja caja){
+        return this.getCajas().contains(caja);
     }
 }

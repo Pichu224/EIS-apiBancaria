@@ -1,14 +1,20 @@
 package com.unq.eis.apibancaria.service.impl;
 
+import com.unq.eis.apibancaria.exception.CajaInexistenteException;
 import com.unq.eis.apibancaria.exception.IdNuloException;
+import com.unq.eis.apibancaria.modelo.Caja;
 import com.unq.eis.apibancaria.modelo.Usuario;
 import com.unq.eis.apibancaria.exception.EmailYaExistenteException;
 import com.unq.eis.apibancaria.exception.UsuarioInexistenteException;
+import com.unq.eis.apibancaria.persistence.CajaDAO;
 import com.unq.eis.apibancaria.persistence.UsuarioDAO;
 import com.unq.eis.apibancaria.service.interfaces.UsuarioService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -16,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioDAO usuarioDao;
+    private final CajaDAO cajaDAO;
 
     @Override
     public Usuario crear(Usuario usuario) {
@@ -70,4 +77,23 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new IdNuloException("El id no puede ser null");
         }
     }
+
+    @Override
+    public BigDecimal consultarSaldo(Long idUsuario, Long idCaja){
+        this.validarIdUsuario(idUsuario);
+        Usuario usuarioRec = this.recuperar(idUsuario);
+        Caja cajaRec = cajaDAO.findById(idCaja)
+                .orElseThrow( () -> new CajaInexistenteException("Caja no encontrada"));
+        return usuarioRec.consultarSaldo(cajaRec);
+    }
+
+    @Override
+    public void ingresarSaldo(Long idUsuario, Long idCaja, BigDecimal monto){
+        this.validarIdUsuario(idUsuario);
+        Usuario usuarioRec = this.recuperar(idUsuario);
+        Caja cajaRec = cajaDAO.findById(idCaja)
+                .orElseThrow( () -> new CajaInexistenteException("Caja no encontrada"));
+        usuarioRec.ingresasDinero(monto, cajaRec);
+    }
+
 }
