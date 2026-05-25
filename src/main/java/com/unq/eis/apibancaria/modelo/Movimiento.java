@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "movimiento")
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -42,5 +41,7 @@ public class Movimiento {
         this.monto = monto;
     }
 
-    //No veo necesario hacer validaciones, ya que al ser llamado ya paso por todas validaciones de las demas clases.
+    //No veo necesario hacer validaciones, ya que al ser llamado ya paso por todas validaciones de las demás clases.
+    // Ojo con ésto (lo dije alann), pq que hayan pasado por otras validaciones no signfica que sea una instacia correcta
+    // de la clase, es decir, cada clase debería de asegurar su propia integridad, no darle esa responsabilidad a las otras...
 }

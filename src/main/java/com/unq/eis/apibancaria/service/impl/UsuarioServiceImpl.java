@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -93,7 +92,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuarioRec = this.recuperar(idUsuario);
         Caja cajaRec = cajaDAO.findById(idCaja)
                 .orElseThrow( () -> new CajaInexistenteException("Caja no encontrada"));
-        usuarioRec.ingresasDinero(monto, cajaRec);
+        usuarioRec.ingresarDinero(monto, cajaRec);
     }
 
 }

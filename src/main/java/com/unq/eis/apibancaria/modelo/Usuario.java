@@ -2,12 +2,10 @@ package com.unq.eis.apibancaria.modelo;
 
 import com.unq.eis.apibancaria.exception.*;
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -59,7 +57,6 @@ public class Usuario {
     private final List<Caja> cajas = new ArrayList<>();
 
     public Usuario(String email, String contrasenia, String nombre, String apellido, String dni) {
-
         this.email = this.validarMail(email);
         this.contrasenia = this.validarContrasenia(contrasenia);
         this.nombre = nombre;
@@ -73,14 +70,14 @@ public class Usuario {
     }
 
     private String validarMail(String email){
-        if (email == null  || ! email.contains("@"))
-            throw new MailInvalidoException("El mail es vacio o no este no es valido!");
+        if (email == null  || !email.contains("@"))
+            throw new MailInvalidoException("El mail es vacío o es inválido!");
         return email;
     }
+
     private String validarContrasenia(String contrasenia){
-        if (contrasenia == null || contrasenia.isEmpty()){
+        if (contrasenia == null || contrasenia.isEmpty())
             throw new ContraseniaVaciaException("La contraseña no puede ser vacia!");
-        }
         return contrasenia;
     }
 
@@ -101,16 +98,14 @@ public class Usuario {
     }
 
     public BigDecimal consultarSaldo(Caja caja) {
-        if (caja != null && !this.laCajaMePertenece(caja)) {
+        if (caja == null || !this.laCajaMePertenece(caja))
             throw new CajaInexistenteException("No exite la caja");
-        }
         return caja.getSaldo();
     }
 
-    public void ingresasDinero(BigDecimal monto, Caja caja){
-        if (!this.laCajaMePertenece(caja)) {
+    public void ingresarDinero(BigDecimal monto, Caja caja){
+        if (!this.laCajaMePertenece(caja))
             throw new CajaInexistenteException("La caja no pertenece al Usuario");
-        }
         caja.depositar(monto);
     }
 
