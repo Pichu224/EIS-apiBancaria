@@ -71,6 +71,11 @@ public class Usuario {
         this.email = this.validarMail(email);
         this.contrasenia = this.validarContrasenia(contrasenia);
     }
+    public Usuario(Long id, String email, String contrasenia){
+        this.idUsuario = id;
+        this.email = this.validarMail(email);
+        this.contrasenia = this.validarContrasenia(contrasenia);
+    }
 
     private String validarMail(String email){
         if (email == null  || ! email.contains("@"))
