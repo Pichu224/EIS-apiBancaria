@@ -52,7 +52,6 @@ public class Caja {
         this.saldo = BigDecimal.ZERO;
         this.usuario = usuario;
     }
-
     public void depositar(BigDecimal monto) {
         this.validarMonto(monto);
         this.saldo = this.saldo.add(monto);
