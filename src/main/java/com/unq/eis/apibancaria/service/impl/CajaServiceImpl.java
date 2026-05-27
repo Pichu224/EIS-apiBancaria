@@ -7,10 +7,12 @@ import com.unq.eis.apibancaria.persistence.CajaDAO;
 import com.unq.eis.apibancaria.persistence.UsuarioDAO;
 import com.unq.eis.apibancaria.service.interfaces.CajaService;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -28,86 +30,54 @@ public class CajaServiceImpl implements CajaService {
 
     @Override
     public Caja recuperar(Long idCaja){
-        this.validarIdCaja(idCaja);
-        return this.recuperarCajaDeBD(idCaja);
+        return cajaDao.findById(idCaja)
+                .orElseThrow(() -> new CajaInexistenteException("Caja no encontrada!"));
     }
 
     @Override
     public Caja actualizar(Long idCaja, Caja caja){ // Solo se puede actualizar el nroCaja, Alias y TipodeCaja.
+        Caja cajaRecuperada = this.recuperar(idCaja);
 
-        this.validarIdCaja(idCaja);
-
-        Caja cajaRecuperada = this.recuperarCajaDeBD(idCaja);
-
-        if(!(cajaRecuperada.getNroCaja().equals(caja.getNroCaja())) && cajaDao.existsByNroCaja(caja.getNroCaja())){
+        if(!(cajaRecuperada.getNroCaja().equals(caja.getNroCaja())) &&
+                cajaDao.existsByNroCaja(caja.getNroCaja()))
             throw new NroCajaYaExistenteException("Ya existe una caja con ese número asignado.");
-        }
 
-        if(!(cajaRecuperada.getAlias().equals(caja.getAlias())) && cajaDao.existsByAlias(caja.getAlias())){
+        if(!(cajaRecuperada.getAlias().equals(caja.getAlias())) && cajaDao.existsByAlias(caja.getAlias()))
             throw new AliasYaExistenteException("Ya existe una caja con ese alias.");
-        }
 
         cajaRecuperada.setNroCaja(caja.getNroCaja());
         cajaRecuperada.setAlias(caja.getAlias());
         cajaRecuperada.setTipoCaja(caja.getTipoCaja());
 
         return cajaRecuperada;
-
     }
 
     @Override
     public void eliminar(Long idCaja){
-        if (idCaja == null || !cajaDao.existsById(idCaja)){
-            throw new CajaInexistenteException("Caja no encontrada");
-        }
+        this.recuperar(idCaja);
         cajaDao.deleteById(idCaja);
     }
 
     @Override
     public void depositar(Long idCaja, BigDecimal monto){
-
-        this.validarIdCaja(idCaja);
-
-        Caja cajaDepositar = this.recuperarCajaDeBD(idCaja);
-
+        Caja cajaDepositar = this.recuperar(idCaja);
         cajaDepositar.depositar(monto);
-
     }
 
     @Override
     public void retirar(Long idCaja, BigDecimal monto){
-
-        this.validarIdCaja(idCaja);
-
-        Caja cajaRetirar = this.recuperarCajaDeBD(idCaja);
-
+        Caja cajaRetirar = this.recuperar(idCaja);
         cajaRetirar.retirar(monto);
     }
 
-    private void validarCreacionCaja(Caja caja){
-        Usuario usuarioCaja =  caja.getUsuario();
-
-        if(usuarioCaja.getIdUsuario() == null ){
-            throw new IdNuloException("El id no puede ser null");
-        }
-        if(!usuarioDAO.existsById(usuarioCaja.getIdUsuario())){
+    private void validarCreacionCaja(@NonNull Caja caja){
+        if(!usuarioDAO.existsById(caja.getUsuario().getIdUsuario()))
             throw new UsuarioInexistenteException("El usuario no existe!");
-        }
-        if(cajaDao.existsByNroCaja(caja.getNroCaja())){
+
+        if(cajaDao.existsByNroCaja(caja.getNroCaja()))
             throw new NroCajaYaExistenteException("Ya existe el numero de Caja elegido");
-        }
-        if(cajaDao.existsByAlias(caja.getAlias())){
+
+        if(cajaDao.existsByAlias(caja.getAlias()))
             throw new AliasYaExistenteException("Ya existe el alias ingresado");
-        }
-    }
-
-    private void validarIdCaja(Long id){
-        if ( id == null) {
-            throw new IdNuloException("El id no puede ser null");
-        }
-    }
-
-    private Caja recuperarCajaDeBD(Long idCaja){
-        return cajaDao.findById(idCaja).orElseThrow(() -> new CajaInexistenteException("Caja no encontrada!"));
     }
 }

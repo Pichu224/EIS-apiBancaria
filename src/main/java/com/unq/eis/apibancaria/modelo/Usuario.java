@@ -2,14 +2,13 @@ package com.unq.eis.apibancaria.modelo;
 
 import com.unq.eis.apibancaria.exception.*;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Entity
@@ -26,13 +25,13 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter
     private Long idUsuario;
 
     @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
+    @NonNull
     private String contrasenia;
 
     @Column(length = 100)
@@ -56,7 +55,7 @@ public class Usuario {
             orphanRemoval = true)   // Permite que si se borra una caja, cuando le pegemos a la BD, este se actualiza sola al pasarle el usuario. Evitando tener que borrar la caja con otra peticion a la BD.
     private final List<Caja> cajas = new ArrayList<>();
 
-    public Usuario(String email, String contrasenia, String nombre, String apellido, String dni) {
+    public Usuario(@NonNull String email, @NonNull String contrasenia, @NonNull String nombre, @NonNull String apellido, @NonNull String dni) {
         this.email = this.validarMail(email);
         this.contrasenia = this.validarContrasenia(contrasenia);
         this.nombre = nombre;
@@ -64,19 +63,19 @@ public class Usuario {
         this.dni = dni;
     }
 
-    public Usuario(String email, String contrasenia) {
+    public Usuario(@NonNull String email, @NonNull String contrasenia) {
         this.email = this.validarMail(email);
         this.contrasenia = this.validarContrasenia(contrasenia);
     }
 
-    private String validarMail(String email){
-        if (email == null  || !email.contains("@"))
+    private String validarMail(@NonNull String email){
+        if (!email.contains("@"))
             throw new MailInvalidoException("El mail es vacío o es inválido!");
         return email;
     }
 
-    private String validarContrasenia(String contrasenia){
-        if (contrasenia == null || contrasenia.isEmpty())
+    private String validarContrasenia(@NonNull String contrasenia){
+        if (contrasenia.length() < 4)
             throw new ContraseniaVaciaException("La contraseña no puede ser vacia!");
         return contrasenia;
     }
@@ -90,15 +89,16 @@ public class Usuario {
     }
 
     public void addCaja(Caja caja){
-        this.cajas.add(caja);
+        this.cajas.add(Objects.requireNonNull(caja, "La caja no puede ser null"));
     }
 
     public void removeCaja(Caja caja){
-        this.cajas.remove(caja);
+        if(this.laCajaMePertenece(caja))
+            this.cajas.remove(caja);
     }
 
-    public BigDecimal consultarSaldo(Caja caja) {
-        if (caja == null || !this.laCajaMePertenece(caja))
+    public BigDecimal consultarSaldo(@NonNull Caja caja) {
+        if (!this.laCajaMePertenece(caja))
             throw new CajaInexistenteException("No exite la caja");
         return caja.getSaldo();
     }

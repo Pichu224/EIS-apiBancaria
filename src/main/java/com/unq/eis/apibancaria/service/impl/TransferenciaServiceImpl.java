@@ -25,11 +25,11 @@ public class TransferenciaServiceImpl implements TransferenciaService {
     private final CajaDAO cajaDao;
     private final MovimientoDAO movimientoDao;
 
-    @Override
+    private Caja recuperarCajaDeBD(Long idCaja){
+        return cajaDao.findById(idCaja).orElseThrow(() -> new CajaInexistenteException("Caja no encontrada!"));
+    }
+
     public Transferencia tranferir(Long idCajaOrigen, Long idCajaDestino, BigDecimal montoTotal){
-
-        this.validarIdCajas(idCajaOrigen, idCajaDestino);
-
         Caja cajaOrigen = recuperarCajaDeBD(idCajaOrigen);
         Caja cajaDestino = recuperarCajaDeBD(idCajaDestino);
 
@@ -38,26 +38,14 @@ public class TransferenciaServiceImpl implements TransferenciaService {
 
         Transferencia transferencia = new Transferencia(montoTotal, cajaOrigen, cajaDestino);
 
-        // Tambien se crea el movimiento y se persiste con movimientoDao.
+        // También se crea el movimiento y se persiste con movimientoDao.
 
         return transferenciaDao.save(transferencia);
     }
 
-    @Override
     @Transactional(readOnly = true)
     public Transferencia recuperar(Long idTransferencia){
-
-        return transferenciaDao.findById(idTransferencia).orElseThrow(() -> new TransferenciaInexistenteException("Transferencia no encontrada"));
-    }
-
-    private Caja recuperarCajaDeBD(Long idCaja){
-        return cajaDao.findById(idCaja).orElseThrow(() -> new CajaInexistenteException("Caja no encontrada!"));
-    }
-
-    private void validarIdCajas(Long idCajaOrigen, Long idCajaDestino){
-
-        if(idCajaOrigen == null || idCajaDestino == null){
-            throw new IdNuloException("Ninguno de los dos id pueden ser nulos!");
-        }
+        return transferenciaDao.findById(idTransferencia)
+                .orElseThrow(() -> new TransferenciaInexistenteException("Transferencia no encontrada"));
     }
 }

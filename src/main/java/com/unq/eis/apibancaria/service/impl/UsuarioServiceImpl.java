@@ -25,34 +25,25 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public Usuario crear(Usuario usuario) {
-        if (usuarioDao.existsByEmail(usuario.getEmail())) {
+        if (usuarioDao.existsByEmail(usuario.getEmail()))
             throw new EmailYaExistenteException("Ya existe un usuario con ese email");
-        }
         return usuarioDao.save(usuario);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Usuario recuperar(Long idUsuario) {
-        this.validarIdUsuario(idUsuario);
         return usuarioDao.findById(idUsuario)
                 .orElseThrow(() -> new UsuarioInexistenteException("Usuario no encontrado"));
     }
 
     @Override
     public Usuario actualizar(Long id, Usuario usuario) {
+        Usuario existente = this.recuperar(id);
 
-        this.validarIdUsuario(id);
-
-        Usuario existente = usuarioDao.findById(id)
-                .orElseThrow(() -> new UsuarioInexistenteException("Usuario no encontrado"));
-
-        // Validar email si cambió
         if (!existente.getEmail().equals(usuario.getEmail()) &&
-                usuarioDao.existsByEmail(usuario.getEmail())) {
-
+                usuarioDao.existsByEmail(usuario.getEmail()))
             throw new EmailYaExistenteException("Ya existe un usuario con ese email");
-        }
 
         existente.setEmail(usuario.getEmail());
         existente.setContrasenia(usuario.getContrasenia());
@@ -65,21 +56,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public void eliminar(Long idUsuario) {
-        if (idUsuario == null || !usuarioDao.existsById(idUsuario)) {
-            throw new UsuarioInexistenteException("Usuario no encontrado");
-        }
+        this.recuperar(idUsuario);
         usuarioDao.deleteById(idUsuario);
-    }
-
-    private void validarIdUsuario(Long idUsuario){
-        if (idUsuario == null) {
-            throw new IdNuloException("El id no puede ser null");
-        }
     }
 
     @Override
     public BigDecimal consultarSaldo(Long idUsuario, Long idCaja){
-        this.validarIdUsuario(idUsuario);
         Usuario usuarioRec = this.recuperar(idUsuario);
         Caja cajaRec = cajaDAO.findById(idCaja)
                 .orElseThrow( () -> new CajaInexistenteException("Caja no encontrada"));
@@ -88,7 +70,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public void ingresarSaldo(Long idUsuario, Long idCaja, BigDecimal monto){
-        this.validarIdUsuario(idUsuario);
         Usuario usuarioRec = this.recuperar(idUsuario);
         Caja cajaRec = cajaDAO.findById(idCaja)
                 .orElseThrow( () -> new CajaInexistenteException("Caja no encontrada"));
