@@ -33,4 +33,39 @@ public class GlobalExceptionHandler { // Hay que modificar el HttpStatus para qu
         ErrorResponse errorDetails = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(IdNuloException.class)
+    public ResponseEntity<?> handlerIdNuloException(IdNuloException e, WebRequest request){
+        ErrorResponse errorDetails = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NroCajaYaExistenteException.class)
+    public ResponseEntity<?> handlerNroCajaYaExistenteException(NroCajaYaExistenteException e, WebRequest request){
+        ErrorResponse errorDetails = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AliasYaExistenteException.class)
+    public ResponseEntity<?> handlerAliasYaExistenteException(AliasYaExistenteException e, WebRequest request){
+        ErrorResponse errorDetails = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CajaInexistenteException.class)
+    public ResponseEntity<?> handlerCajaInexistenteException(CajaInexistenteException e, WebRequest request){
+        ErrorResponse errorDetails = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MontoInvalidoException.class)
+    public ResponseEntity<?> handlerMontoInvalidoException(MontoInvalidoException e, WebRequest request){
+        ErrorResponse errorDetails = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(SaldoInsuficienteException.class)
+    public ResponseEntity<?> handlerSaldoInsuficienteException(SaldoInsuficienteException e, WebRequest request){
+        ErrorResponse errorDetails = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
 }
