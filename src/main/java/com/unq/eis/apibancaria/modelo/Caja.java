@@ -3,10 +3,7 @@ package com.unq.eis.apibancaria.modelo;
 import com.unq.eis.apibancaria.exception.MontoInvalidoException;
 import com.unq.eis.apibancaria.exception.SaldoInsuficienteException;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.math.BigDecimal;
 
@@ -29,9 +26,11 @@ public class Caja {
     private Long idCaja;
 
     @Column(nullable = false, unique = true)
+    @NonNull
     private Long nroCaja;
 
     @Column(nullable = false, unique = true)
+    @NonNull
     private String alias;
 
     @Enumerated(EnumType.STRING)
@@ -39,25 +38,26 @@ public class Caja {
     private TipoCaja tipoCaja;
 
     @Column(nullable = false, precision = 15, scale = 2)
-    private BigDecimal saldo; //Int??
+    private BigDecimal saldo = BigDecimal.ZERO;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario", nullable = false)
+    @NonNull
     private Usuario usuario;
 
-    public Caja(Long nroCaja, String alias, Usuario usuario){
+    public Caja(@NonNull Long nroCaja, @NonNull String alias, @NonNull Usuario usuario){
         this.nroCaja = nroCaja;
         this.alias = alias;
         this.tipoCaja = TipoCaja.CajaAhorro;
-        this.saldo = BigDecimal.ZERO;
         this.usuario = usuario;
     }
-    public void depositar(BigDecimal monto) {
+  
+    public void depositar(@NonNull BigDecimal monto) {
         this.validarMonto(monto);
         this.saldo = this.saldo.add(monto);
     }
 
-    public void retirar(BigDecimal monto) {
+    public void retirar(@NonNull BigDecimal monto) {
         this.validarMonto(monto);
         if(this.saldo.compareTo(monto) < 0) {
             throw new SaldoInsuficienteException("Saldo insuficiente");
