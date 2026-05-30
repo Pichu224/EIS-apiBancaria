@@ -36,7 +36,7 @@ public class UsuarioServiceImplTest {
     void setUp(){
         usuarioTest1 = new Usuario();
         usuarioTest1.setEmail("nico@gmail.com");
-        usuarioTest1.setContrasenia("123");
+        usuarioTest1.setContrasenia("1234");
         usuarioTest1.setNombre("Nicolas");
         usuarioTest1.setApellido("Vaccaro");
         usuarioTest1.setDni("40.123.456");
@@ -84,7 +84,7 @@ public class UsuarioServiceImplTest {
         usuarioTest1.setIdUsuario(1L);
         when(usuarioDAO.findById(1L)).thenReturn(Optional.of(usuarioTest1));
 
-        usuarioTest1.setContrasenia("456");
+        usuarioTest1.setContrasenia("4567");
         usuarioTest1.setNombre("Nico");
         usuarioTest1.setApellido("Vaqui");
         usuarioTest1.setDni("40.321.654");
@@ -104,7 +104,7 @@ public class UsuarioServiceImplTest {
     @Test
     public void ActualizarFallaPorUsuarioNoPersistido(){
         usuarioTest1.setEmail("nico@gmail.com");
-        assertThrows(IdNuloException.class, () -> serviceUsuario.actualizar(null, usuarioTest1));
+        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.actualizar(null, usuarioTest1));
     }
 
     @Test
@@ -135,7 +135,7 @@ public class UsuarioServiceImplTest {
 
     @Test
     public void RecuperarUsuarioSinSerPersistido(){
-        assertThrows(IdNuloException.class, () -> serviceUsuario.recuperar(null));
+        assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.recuperar(null));
     }
 
     @Test
@@ -146,7 +146,7 @@ public class UsuarioServiceImplTest {
 
     @Test
     public void BorrarUsuarioPersistido(){
-        when(usuarioDAO.existsById(1L)).thenReturn(true);
+        when(usuarioDAO.findById(1L)).thenReturn(Optional.of(usuarioTest1));
         serviceUsuario.eliminar(1L);
         when(usuarioDAO.findById(1L)).thenReturn(Optional.empty());
         assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.recuperar(1L));

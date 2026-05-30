@@ -16,13 +16,13 @@ public class UsuarioTest {
 
     @BeforeEach
     void setUp(){
-        userTest = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
+        userTest = new Usuario("nico@gmail.com","1234","Nicolas","Vaccaro","40.123.456");
     }
 
     @Test
     public void CreacionUsuario(){
         assertEquals("nico@gmail.com", userTest.getEmail());
-        assertEquals("123",userTest.getContrasenia());
+        assertEquals("1234",userTest.getContrasenia());
         assertEquals("Nicolas", userTest.getNombre());
         assertEquals("Vaccaro",userTest.getApellido());
         assertEquals("40.123.456", userTest.getDni());
@@ -30,8 +30,8 @@ public class UsuarioTest {
 
     @Test
     public void ErrorAlCrearUnUsuarioConEmailVacioOIncorrecto(){
-        assertThrows(MailInvalidoException.class, () -> {new Usuario("","123","Nicolas","Vaccaro","40.123.456");});
-        assertThrows(MailInvalidoException.class, () -> {new Usuario(null,"123","Nicolas","Vaccaro","40.123.456");});
+        assertThrows(MailInvalidoException.class, () -> {new Usuario("","1234","Nicolas","Vaccaro","40.123.456");});
+        assertThrows(MailInvalidoException.class, () -> {new Usuario(null,"1234","Nicolas","Vaccaro","40.123.456");});
     }
 
     @Test

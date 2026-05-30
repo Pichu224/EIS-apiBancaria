@@ -46,20 +46,20 @@ public class CajaServiceImplTest {
     private Usuario usuarioTest2;
     private Caja cajaTest1;
     private Caja cajaTest2;
-    private Caja cajaTest3;
 
     @BeforeEach
     void setUp(){
         usuarioTest1 = new Usuario();
+        usuarioTest1.setIdUsuario(1L);
         usuarioTest1.setEmail("nico@gmail.com");
-        usuarioTest1.setContrasenia("123");
+        usuarioTest1.setContrasenia("1234");
         usuarioTest1.setNombre("Nicolas");
         usuarioTest1.setApellido("Vaccaro");
         usuarioTest1.setDni("40.123.456");
 
         usuarioTest2 = new Usuario();
         usuarioTest2.setEmail("mati@gmail.com");
-        usuarioTest2.setContrasenia("456");
+        usuarioTest2.setContrasenia("4567");
         usuarioTest2.setNombre("Matias");
         usuarioTest2.setApellido("Vaccaro");
         usuarioTest2.setDni("40.777.361");
@@ -85,7 +85,7 @@ public class CajaServiceImplTest {
 
         serviceCaja.crear(cajaTest1);
 
-        cajaTest3 = serviceCaja.recuperar(cajaTest1.getIdCaja());
+        Caja cajaTest3 = serviceCaja.recuperar(cajaTest1.getIdCaja());
 
         assertEquals(cajaTest1.getNroCaja(), cajaTest3.getNroCaja());
         assertEquals(cajaTest1.getAlias(), cajaTest3.getAlias());
@@ -96,8 +96,8 @@ public class CajaServiceImplTest {
 
     @Test
     public void ErrorCrearCajaConUsuarioNoPersistido(){
-        // usuario sin id -> debe lanzar IdNuloException
-        assertThrows(IdNuloException.class, () -> serviceCaja.crear(cajaTest2));
+        // usuario sin id -> debe lanzar UsuarioInexistenteException
+        assertThrows(UsuarioInexistenteException.class, () -> serviceCaja.crear(cajaTest2));
     }
 
     @Test
@@ -135,7 +135,7 @@ public class CajaServiceImplTest {
 
     @Test
     public void ErrorRecuperarCajaSinPersistir(){
-        assertThrows(IdNuloException.class, () -> serviceCaja.recuperar(cajaTest1.getIdCaja()));
+        assertThrows(CajaInexistenteException.class, () -> serviceCaja.recuperar(cajaTest1.getIdCaja()));
     }
 
     @Test
@@ -169,7 +169,7 @@ public class CajaServiceImplTest {
 
     @Test
     public void ErrorActualizarCajaSinIdYConIdInexistente(){
-        assertThrows(IdNuloException.class, () -> serviceCaja.actualizar(null, cajaTest1));
+        assertThrows(CajaInexistenteException.class, () -> serviceCaja.actualizar(null, cajaTest1));
         cajaTest1.setIdCaja(1L);
         when(cajaDAO.findById(1L)).thenReturn(Optional.empty());
         assertThrows(CajaInexistenteException.class, () -> serviceCaja.actualizar(1L, cajaTest1));
@@ -204,11 +204,9 @@ public class CajaServiceImplTest {
     @Test
     public void EliminarUnaCajaPersistida(){
         cajaTest1.setIdCaja(1L);
-        when(cajaDAO.existsById(1L)).thenReturn(true);
-        when(cajaDAO.findById(1L)).thenReturn(Optional.empty());
-
+        when(cajaDAO.findById(1L)).thenReturn(Optional.of(cajaTest1));
         serviceCaja.eliminar(1L);
-
+        when(cajaDAO.findById(1L)).thenReturn(Optional.empty());
         assertThrows(CajaInexistenteException.class, () -> serviceCaja.recuperar(1L));
     }
 
@@ -216,7 +214,6 @@ public class CajaServiceImplTest {
     public void ErrorEliminarCajaNoPersistidaYSinId(){
         assertThrows(CajaInexistenteException.class, () -> serviceCaja.eliminar(null));
         cajaTest1.setIdCaja(1L);
-        when(cajaDAO.existsById(1L)).thenReturn(false);
         assertThrows(CajaInexistenteException.class, () -> serviceCaja.eliminar(1L));
     }
 
@@ -245,7 +242,7 @@ public class CajaServiceImplTest {
 
     @Test
     public void ErrorDepositarDineroConCajaSinId(){
-        assertThrows(IdNuloException.class, () -> serviceCaja.depositar(null, BigDecimal.ONE));
+        assertThrows(CajaInexistenteException.class, () -> serviceCaja.depositar(null, BigDecimal.ONE));
     }
 
     @Test
@@ -288,7 +285,7 @@ public class CajaServiceImplTest {
 
     @Test
     public void ErrorRetirarDineroConCajaSinId(){
-        assertThrows(IdNuloException.class, () -> serviceCaja.retirar(null, BigDecimal.ONE));
+        assertThrows(CajaInexistenteException.class, () -> serviceCaja.retirar(null, BigDecimal.ONE));
     }
 
     @Test

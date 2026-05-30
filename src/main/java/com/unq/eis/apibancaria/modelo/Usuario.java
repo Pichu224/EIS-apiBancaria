@@ -3,6 +3,7 @@ package com.unq.eis.apibancaria.modelo;
 import com.unq.eis.apibancaria.exception.*;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -25,6 +26,7 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter()
     private Long idUsuario;
 
     @Column(nullable = false, unique = true)
@@ -55,7 +57,7 @@ public class Usuario {
             orphanRemoval = true)   // Permite que si se borra una caja, cuando le pegemos a la BD, este se actualiza sola al pasarle el usuario. Evitando tener que borrar la caja con otra peticion a la BD.
     private final List<Caja> cajas = new ArrayList<>();
 
-    public Usuario(@NonNull String email, @NonNull String contrasenia, @NonNull String nombre, @NonNull String apellido, @NonNull String dni) {
+    public Usuario(String email, String contrasenia, String nombre, String apellido, String dni) {
         this.email = this.validarMail(email);
         this.contrasenia = this.validarContrasenia(contrasenia);
         this.nombre = nombre;
@@ -63,20 +65,26 @@ public class Usuario {
         this.dni = dni;
     }
 
-    public Usuario(@NonNull String email, @NonNull String contrasenia) {
+    public Usuario(String email, String contrasenia) {
         this.email = this.validarMail(email);
         this.contrasenia = this.validarContrasenia(contrasenia);
     }
 
-    private String validarMail(@NonNull String email){
-        if (!email.contains("@"))
+    public Usuario(Long id, String email,  String contrasenia) {
+        this.idUsuario = id;
+        this.email = this.validarMail(email);
+        this.contrasenia = this.validarContrasenia(contrasenia);
+    }
+
+    private String validarMail( String email){
+        if (email == null || !email.contains("@"))
             throw new MailInvalidoException("El mail es vacío o es inválido!");
         return email;
     }
 
-    private String validarContrasenia(@NonNull String contrasenia){
-        if (contrasenia.length() < 4)
-            throw new ContraseniaVaciaException("La contraseña no puede ser vacia!");
+    private String validarContrasenia( String contrasenia){
+        if (contrasenia == null || contrasenia.length() < 3)
+            throw new ContraseniaVaciaException("La contraseña tiene que tener al menos 4 carácteres!");
         return contrasenia;
     }
 
@@ -97,7 +105,7 @@ public class Usuario {
             this.cajas.remove(caja);
     }
 
-    public BigDecimal consultarSaldo(@NonNull Caja caja) {
+    public BigDecimal consultarSaldo( Caja caja) {
         if (!this.laCajaMePertenece(caja))
             throw new CajaInexistenteException("No exite la caja");
         return caja.getSaldo();

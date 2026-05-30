@@ -22,10 +22,10 @@ public class TransferenciaTest {
 
     @BeforeEach
     void setUp(){
-        usuario1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
-        usuario2 = new Usuario("mati@gmail.com","456","Matias","Alvarez","40.777.258");
-        caja1 = new Caja(1L,"testCaja.api",usuario1);
-        caja2 = new Caja(2L, "pruebaCaja.api",usuario2);
+        usuario1 = new Usuario("nico@gmail.com","1234","Nicolas","Vaccaro","40.123.456");
+        usuario2 = new Usuario("mati@gmail.com","4567","Matias","Alvarez","40.777.258");
+        caja1 = new Caja(1L,1L,"testCaja.api",usuario1);
+        caja2 = new Caja(2L, 2L, "pruebaCaja.api",usuario2);
     }
 
     @Test
@@ -36,6 +36,7 @@ public class TransferenciaTest {
         assertEquals(1L, transferencia1.getCajaOrigen().getNroCaja());
         assertEquals(2L, transferencia1.getCajaDestino().getNroCaja());
     }
+
     @Test
     public void ErrorCreacionDeTransferenciaConMontoMenorEIgualACero(){
 
@@ -46,8 +47,8 @@ public class TransferenciaTest {
     @Test
     public void ErrorCreacionDeTransferenciaConCajaVacias(){
 
-        assertThrows(CajasNoIngresadasException.class, ()->{transferencia1 = new Transferencia(BigDecimal.ONE,null, caja2);});
-        assertThrows(CajasNoIngresadasException.class, ()->{transferencia2 = new Transferencia(BigDecimal.ONE,caja1,null);});
+        assertThrows(NullPointerException.class, ()->{transferencia1 = new Transferencia(BigDecimal.ONE,null, caja2);});
+        assertThrows(NullPointerException.class, ()->{transferencia2 = new Transferencia(BigDecimal.ONE,caja1,null);});
     }
 
     @Test

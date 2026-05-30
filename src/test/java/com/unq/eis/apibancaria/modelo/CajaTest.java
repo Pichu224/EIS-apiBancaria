@@ -18,8 +18,8 @@ public class CajaTest {
 
     @BeforeEach
     void setUp(){
-        usuario1 = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
-        usuario2 = new Usuario("mati@gmail.com","456","Matias","Alvarez","40.777.258");
+        usuario1 = new Usuario("nico@gmail.com","1234","Nicolas","Vaccaro","40.123.456");
+        usuario2 = new Usuario("mati@gmail.com","4567","Matias","Alvarez","40.777.258");
         caja1 = new Caja(1L,"testCaja",usuario1);
     }
 

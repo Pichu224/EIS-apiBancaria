@@ -1,3 +1,5 @@
+package com.unq.eis.apibancaria.controller;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +23,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.unq.eis.apibancaria.controller.UsuarioController;
 import com.unq.eis.apibancaria.controller.dto.request.UsuarioRequest;
 import com.unq.eis.apibancaria.modelo.Usuario;
 import com.unq.eis.apibancaria.service.interfaces.UsuarioService;
@@ -47,8 +48,7 @@ public class UsuarioControllerTest {
 
     @Test
     void obtenerUsuario_existente_retornOk() throws Exception {
-        Usuario usuario = new Usuario("test@example.com", "secret");
-        usuario.setIdUsuario(1L);
+        Usuario usuario = new Usuario(1L,"test@example.com", "secret");
 
         when(usuarioService.recuperar(1L)).thenReturn(usuario);
 

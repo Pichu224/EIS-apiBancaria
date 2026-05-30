@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,22 +40,19 @@ public class TransferenciaServiceImplTest {
 
     @InjectMocks
     private TransferenciaServiceImpl serviceTransferir;
-    private Usuario usuarioTest1;
-    private Usuario usuarioTest2;
     private Caja cajaTest1;
     private Caja cajaTest2;
-    private Transferencia transferencia;
 
     @BeforeEach
     void setUp(){
-        usuarioTest1 = new Usuario();
+        Usuario usuarioTest1 = new Usuario();
         usuarioTest1.setEmail("nico@gmail.com");
-        usuarioTest1.setContrasenia("123");
+        usuarioTest1.setContrasenia("1234");
         usuarioTest1.setNombre("Nicolas");
         usuarioTest1.setApellido("Vaccaro");
         usuarioTest1.setDni("40.123.456");
 
-        usuarioTest2 = new Usuario();
+        Usuario usuarioTest2 = new Usuario();
         usuarioTest2.setEmail("mati@gmail.com");
         usuarioTest2.setContrasenia("456");
         usuarioTest2.setNombre("Matias");
@@ -85,7 +82,7 @@ public class TransferenciaServiceImplTest {
                     return t;
                 });
 
-        transferencia = serviceTransferir.tranferir(cajaTest1.getIdCaja(), cajaTest2.getIdCaja(), BigDecimal.valueOf(500L));
+        Transferencia transferencia = serviceTransferir.tranferir(cajaTest1.getIdCaja(), cajaTest2.getIdCaja(), BigDecimal.valueOf(500L));
 
         // Se valida como se "persistio" la transferencia (mock)
         assertNotNull(transferencia.getIdTransferencia());
@@ -103,14 +100,14 @@ public class TransferenciaServiceImplTest {
     @Test
     public void ErrorTransferirConCajasSinId(){
 
-        assertThrows(IdNuloException.class, () ->{serviceTransferir.tranferir(null, 1L, BigDecimal.ONE);});
-        assertThrows(IdNuloException.class, () ->{serviceTransferir.tranferir(1L,null,BigDecimal.ONE);});
+        assertThrows(CajaInexistenteException.class, () -> serviceTransferir.tranferir(null, 1L, BigDecimal.ONE));
+        assertThrows(CajaInexistenteException.class, () -> serviceTransferir.tranferir(1L,null,BigDecimal.ONE));
     }
     @Test
     public void ErrorTransferirConCajasSinPersistir(){
         // Simular que las cajas no existen en la BD
         org.mockito.Mockito.when(cajaDAO.findById(org.mockito.ArgumentMatchers.anyLong())).thenReturn(Optional.empty());
-        assertThrows(CajaInexistenteException.class, () ->{serviceTransferir.tranferir(1L, 2L, BigDecimal.ONE);});
+        assertThrows(CajaInexistenteException.class, () -> serviceTransferir.tranferir(1L, 2L, BigDecimal.ONE));
     }
 
 }

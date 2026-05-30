@@ -17,7 +17,7 @@ public class MovimientoTest {
 
     @BeforeEach
     void setUp(){
-        usuario = new Usuario("nico@gmail.com","123","Nicolas","Vaccaro","40.123.456");
+        usuario = new Usuario("nico@gmail.com","1234","Nicolas","Vaccaro","40.123.456");
         caja = new Caja(1L,"testCaja.api",usuario);
     }
 

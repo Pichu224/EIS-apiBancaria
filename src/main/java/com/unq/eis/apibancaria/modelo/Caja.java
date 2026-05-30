@@ -52,6 +52,14 @@ public class Caja {
         this.usuario = usuario;
     }
 
+    public Caja(Long id, @NonNull Long nroCaja, @NonNull String alias, @NonNull Usuario usuario){
+        this.idCaja = id;
+        this.nroCaja = nroCaja;
+        this.alias = alias;
+        this.tipoCaja = TipoCaja.CajaAhorro;
+        this.usuario = usuario;
+    }
+
     public void depositar(@NonNull BigDecimal monto) {
         this.validarMonto(monto);
         this.saldo = this.saldo.add(monto);
