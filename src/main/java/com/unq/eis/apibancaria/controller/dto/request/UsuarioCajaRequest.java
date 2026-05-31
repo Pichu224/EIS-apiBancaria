@@ -4,6 +4,4 @@ public record UsuarioCajaRequest(
         Long id,
         String email,
         String contrasenia
-) {
-
-}
+) {}

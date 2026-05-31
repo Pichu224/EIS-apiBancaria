@@ -4,11 +4,10 @@ import com.unq.eis.apibancaria.modelo.TipoCaja;
 
 import java.math.BigDecimal;
 
-public record CajaResponse(
+public record CajaInfoResponse(
         Long id,
         Long nroCaja,
         String alias,
         TipoCaja tipoCaja,
-        BigDecimal saldo,
-        UsuarioResponse usuario
+        BigDecimal saldo
 ) {}

@@ -1,10 +1,13 @@
 package com.unq.eis.apibancaria.controller.mapper;
 
+import com.unq.eis.apibancaria.controller.dto.request.CajaActualizarRequest;
 import com.unq.eis.apibancaria.controller.dto.request.CajaRequest;
 import com.unq.eis.apibancaria.controller.dto.request.UsuarioRequest;
+import com.unq.eis.apibancaria.controller.dto.response.CajaInfoResponse;
 import com.unq.eis.apibancaria.controller.dto.response.CajaResponse;
 import com.unq.eis.apibancaria.controller.dto.response.UsuarioResponse;
 import com.unq.eis.apibancaria.modelo.Caja;
+import com.unq.eis.apibancaria.modelo.TipoCaja;
 import com.unq.eis.apibancaria.modelo.Usuario;
 
 import java.math.BigDecimal;
@@ -20,6 +23,13 @@ public class CajaMapper {
                 UserMapper.aModeloParaCaja(request.usuario())
         );
     }
+    static public Caja aModelo(CajaActualizarRequest request) {
+        return new Caja(
+                request.nroCaja(),
+                request.alias(),
+                request.tipoCaja()
+        );
+    }
 
     static public CajaResponse desdeModelo(Caja modelo) {
         return new CajaResponse(
@@ -31,7 +41,18 @@ public class CajaMapper {
                 UserMapper.desdeModelo(modelo.getUsuario())
         );
     }
-    static public BigDecimal aModeloMonto(CajaResponse response) {
+
+    static public CajaInfoResponse desdeModeloInfo(Caja modelo){
+        return new CajaInfoResponse(
+                modelo.getIdCaja(),
+                modelo.getNroCaja(),
+                modelo.getAlias(),
+                modelo.getTipoCaja(),
+                modelo.getSaldo()
+        );
+    }
+
+    static public BigDecimal aModeloMonto(CajaInfoResponse response) {
         return response.saldo();
     }
 }
