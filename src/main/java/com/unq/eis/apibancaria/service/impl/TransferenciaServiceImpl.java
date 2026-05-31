@@ -5,6 +5,7 @@ import com.unq.eis.apibancaria.exception.IdNuloException;
 import com.unq.eis.apibancaria.exception.TransferenciaInexistenteException;
 import com.unq.eis.apibancaria.exception.UsuarioInexistenteException;
 import com.unq.eis.apibancaria.modelo.Caja;
+import com.unq.eis.apibancaria.modelo.Movimiento;
 import com.unq.eis.apibancaria.modelo.Transferencia;
 import com.unq.eis.apibancaria.persistence.CajaDAO;
 import com.unq.eis.apibancaria.persistence.MovimientoDAO;
@@ -37,10 +38,12 @@ public class TransferenciaServiceImpl implements TransferenciaService {
         cajaDestino.depositar(montoTotal);
 
         Transferencia transferencia = new Transferencia(montoTotal, cajaOrigen, cajaDestino);
+        transferenciaDao.save(transferencia);
 
-        // También se crea el movimiento y se persiste con movimientoDao.
+        Movimiento movimiento = new Movimiento(transferencia.getIdTransferencia(), cajaOrigen, montoTotal, cajaDestino.getNroCaja().toString());
+        movimientoDao.save(movimiento);
 
-        return transferenciaDao.save(transferencia);
+        return transferencia;
     }
 
     @Transactional(readOnly = true)

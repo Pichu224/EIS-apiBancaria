@@ -2,17 +2,11 @@ package com.unq.eis.apibancaria.controller.mapper;
 
 import com.unq.eis.apibancaria.controller.dto.request.CajaActualizarRequest;
 import com.unq.eis.apibancaria.controller.dto.request.CajaRequest;
-import com.unq.eis.apibancaria.controller.dto.request.UsuarioRequest;
 import com.unq.eis.apibancaria.controller.dto.response.CajaInfoResponse;
 import com.unq.eis.apibancaria.controller.dto.response.CajaResponse;
-import com.unq.eis.apibancaria.controller.dto.response.UsuarioResponse;
 import com.unq.eis.apibancaria.modelo.Caja;
-import com.unq.eis.apibancaria.modelo.TipoCaja;
-import com.unq.eis.apibancaria.modelo.Usuario;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CajaMapper {
 

@@ -1,5 +1,6 @@
 package com.unq.eis.apibancaria.modelo;
 
+import com.unq.eis.apibancaria.exception.MontoInvalidoException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,11 +38,15 @@ public class Movimiento {
     public Movimiento(@NonNull Long nroTransferencia, @NonNull Caja cajaUtilizada, @NonNull BigDecimal monto, @NonNull String descripcion) {
         this.nroTransferencia = nroTransferencia;
         this.cajaUtilizada = cajaUtilizada;
-        this.descripcion = descripcion;
+        this.validarMonto(monto);
         this.monto = monto;
+        // Esto puede ser modificado para que quede mejor la descricion.
+        this.descripcion = "NroCaja : " + cajaUtilizada.getNroCaja() + " realizo transferencia hacia la caja : " + descripcion;
     }
 
-    //No veo necesario hacer validaciones, ya que al ser llamado ya paso por todas validaciones de las demás clases.
-    // Ojo con ésto (lo dice alann), pq que hayan pasado por otras validaciones no signfica que sea una instacia correcta
-    // de la clase, es decir, cada clase debería de asegurar su propia integridad, no darle esa responsabilidad a las otras...
+    private void validarMonto(BigDecimal monto) {
+        if(monto.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new MontoInvalidoException("El monto debe ser mayor a cero!");
+        }
+    }
 }

@@ -57,15 +57,7 @@ class CajaControllerTest {
     @Test
     void crearCaja() throws Exception {
 
-        CajaRequest request = new CajaRequest(
-                12345L,
-                "Caja Principal",
-                new UsuarioCajaRequest(
-                        1L,
-                        "test@test.com",
-                        "1234"
-                )
-        );
+        CajaRequest request = new CajaRequest(12345L, "Caja Principal", new UsuarioCajaRequest(1L, "test@test.com", "1234" ));
 
         mockMvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -79,15 +71,7 @@ class CajaControllerTest {
     void crearCajaConNumeroDuplicadoRetornaBadRequest() throws Exception {
 
         CajaRequest request =
-                new CajaRequest(
-                        12345L,
-                        "Caja Principal",
-                        new UsuarioCajaRequest(
-                                1L,
-                                "test@test.com",
-                                "1234"
-                        )
-                );
+                new CajaRequest(12345L, "Caja Principal", new UsuarioCajaRequest(1L, "test@test.com", "1234" ));
 
         doThrow(new NroCajaYaExistenteException("Número de caja existente"))
                 .when(cajaService)
@@ -105,11 +89,7 @@ class CajaControllerTest {
         Usuario usuario = new Usuario();
         usuario.setIdUsuario(1L);
 
-        Caja caja = new Caja(
-                12345L,
-                "Caja Principal",
-                usuario
-        );
+        Caja caja = new Caja(12345L, "Caja Principal", usuario );
 
         caja.setIdCaja(1L);
 
@@ -135,41 +115,30 @@ class CajaControllerTest {
     @Test
     void actualizarCaja() throws Exception {
 
-        CajaActualizarRequest request = new CajaActualizarRequest(
-                99999L,
-                "Nuevo Alias",
-                TipoCaja.CajaCorriente
-        );
+        CajaActualizarRequest request = new CajaActualizarRequest(99999L, "Nuevo Alias", TipoCaja.CajaCorriente );
 
         Usuario usuario = new Usuario();
         usuario.setIdUsuario(1L);
 
-        Caja cajaActualizada = new Caja(
-                99999L,
-                "Nuevo Alias",
-                usuario
-        );
+        Caja cajaActualizada = new Caja(99999L, "Nuevo Alias", usuario );
 
         cajaActualizada.setIdCaja(1L);
         cajaActualizada.setTipoCaja(TipoCaja.CajaCorriente);
 
-        when(cajaService.actualizar(eq(1L), any(Caja.class)))
-                .thenReturn(cajaActualizada);
+        when(cajaService.actualizar(eq(1L), any(Caja.class))).thenReturn(cajaActualizada);
 
         mockMvc.perform(put(BASE_URL + "/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
 
-        verify(cajaService)
-                .actualizar(eq(1L), any(Caja.class));
+        verify(cajaService).actualizar(eq(1L), any(Caja.class));
     }
 
     @Test
     void eliminarCaja() throws Exception {
 
-        mockMvc.perform(delete(BASE_URL + "/1"))
-                .andExpect(status().isNoContent());
+        mockMvc.perform(delete(BASE_URL + "/1")).andExpect(status().isNoContent());
 
         verify(cajaService).eliminar(1L);
     }
@@ -177,53 +146,33 @@ class CajaControllerTest {
     @Test
     void depositarMonto() throws Exception {
 
-        CajaInfoResponse request = new CajaInfoResponse(
-                1L,
-                12345L,
-                "Caja Principal",
-                TipoCaja.CajaAhorro,
-                BigDecimal.valueOf(500)
-        );
+        CajaInfoResponse request = new CajaInfoResponse(1L, 12345L, "Caja Principal", TipoCaja.CajaAhorro, BigDecimal.valueOf(500) );
 
         mockMvc.perform(put(BASE_URL + "/1/depositar")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
 
-        verify(cajaService)
-                .depositar(1L, BigDecimal.valueOf(500));
+        verify(cajaService).depositar(1L, BigDecimal.valueOf(500));
     }
 
     @Test
     void retirarMonto() throws Exception {
 
-        CajaInfoResponse request = new CajaInfoResponse(
-                1L,
-                12345L,
-                "Caja Principal",
-                TipoCaja.CajaAhorro,
-                BigDecimal.valueOf(250)
-        );
+        CajaInfoResponse request = new CajaInfoResponse(1L, 12345L, "Caja Principal", TipoCaja.CajaAhorro, BigDecimal.valueOf(250) );
 
         mockMvc.perform(put(BASE_URL + "/1/retirar")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
 
-        verify(cajaService)
-                .retirar(1L, BigDecimal.valueOf(250));
+        verify(cajaService).retirar(1L, BigDecimal.valueOf(250));
     }
 
     @Test
     void depositarMontoInvalido() throws Exception {
 
-        CajaInfoResponse request = new CajaInfoResponse(
-                1L,
-                12345L,
-                "Caja Principal",
-                TipoCaja.CajaAhorro,
-                BigDecimal.ZERO
-        );
+        CajaInfoResponse request = new CajaInfoResponse(1L, 12345L, "Caja Principal", TipoCaja.CajaAhorro, BigDecimal.ZERO );
 
         doThrow(new MontoInvalidoException("El monto debe ser mayor a cero"))
                 .when(cajaService)
@@ -234,20 +183,13 @@ class CajaControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
 
-        verify(cajaService)
-                .depositar(eq(1L), any(BigDecimal.class));
+        verify(cajaService).depositar(eq(1L), any(BigDecimal.class));
     }
 
     @Test
     void retirarSaldoInsuficiente() throws Exception {
 
-        CajaInfoResponse request = new CajaInfoResponse(
-                1L,
-                12345L,
-                "Caja Principal",
-                TipoCaja.CajaAhorro,
-                BigDecimal.valueOf(10000)
-        );
+        CajaInfoResponse request = new CajaInfoResponse(1L, 12345L, "Caja Principal", TipoCaja.CajaAhorro, BigDecimal.valueOf(10000) );
 
         doThrow(new SaldoInsuficienteException("Saldo insuficiente"))
                 .when(cajaService)
@@ -258,7 +200,6 @@ class CajaControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnprocessableEntity());
 
-        verify(cajaService)
-                .retirar(eq(1L), any(BigDecimal.class));
+        verify(cajaService).retirar(eq(1L), any(BigDecimal.class));
     }
 }
