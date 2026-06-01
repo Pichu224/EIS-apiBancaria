@@ -2,6 +2,7 @@ package com.unq.eis.apibancaria.controller.mapper;
 
 import com.unq.eis.apibancaria.controller.dto.request.UsuarioCajaRequest;
 import com.unq.eis.apibancaria.controller.dto.request.UsuarioRequest;
+import com.unq.eis.apibancaria.controller.dto.response.UsuarioCompletoResponse;
 import com.unq.eis.apibancaria.controller.dto.response.UsuarioResponse;
 import com.unq.eis.apibancaria.modelo.Usuario;
 import java.util.ArrayList;
@@ -21,6 +22,18 @@ public class UserMapper {
                 modelo.getIdUsuario(),
                 modelo.getEmail(),
                 modelo.getContrasenia()
+        );
+    }
+
+    static public UsuarioCompletoResponse desdeModeloCompleto(Usuario modelo) {
+        return new UsuarioCompletoResponse(
+                modelo.getIdUsuario(),
+                modelo.getEmail(),
+                modelo.getContrasenia(),
+                modelo.getNombre(),
+                modelo.getApellido(),
+                modelo.getDni(),
+                modelo.getFechaRegistro()
         );
     }
 

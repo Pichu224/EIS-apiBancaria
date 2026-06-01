@@ -10,5 +10,4 @@ public interface UsuarioService {
     Usuario actualizar(Long id, Usuario usuario);
     void eliminar(Long idUsuario);
     BigDecimal consultarSaldo(Long idUsuario, Long idCaja);
-    void ingresarSaldo(Long idUsuario, Long idCaja, BigDecimal monto);
 }

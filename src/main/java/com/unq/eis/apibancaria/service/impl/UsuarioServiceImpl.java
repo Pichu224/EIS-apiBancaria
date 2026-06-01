@@ -67,13 +67,4 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .orElseThrow( () -> new CajaInexistenteException("Caja no encontrada"));
         return usuarioRec.consultarSaldo(cajaRec);
     }
-
-    @Override
-    public void ingresarSaldo(Long idUsuario, Long idCaja, BigDecimal monto){
-        Usuario usuarioRec = this.recuperar(idUsuario);
-        Caja cajaRec = cajaDAO.findById(idCaja)
-                .orElseThrow( () -> new CajaInexistenteException("Caja no encontrada"));
-        usuarioRec.ingresarDinero(monto, cajaRec);
-    }
-
 }

@@ -3,7 +3,6 @@ package com.unq.eis.apibancaria.modelo;
 import com.unq.eis.apibancaria.exception.*;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
