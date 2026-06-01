@@ -46,18 +46,23 @@ class CajaControllerTest {
     @InjectMocks
     private CajaController cajaController;
 
+    private CajaRequest request;
+    private Usuario usuario;
+
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(cajaController)
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .build();
+
+        this.request = new CajaRequest(12345L, "Caja Principal", new UsuarioCajaRequest(1L, "test@test.com", "1234" ));
+        this.usuario = new Usuario();
+        usuario.setIdUsuario(1L);
     }
 
     @Test
     void crearCaja() throws Exception {
-
-        CajaRequest request = new CajaRequest(12345L, "Caja Principal", new UsuarioCajaRequest(1L, "test@test.com", "1234" ));
 
         mockMvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -69,9 +74,6 @@ class CajaControllerTest {
 
     @Test
     void crearCajaConNumeroDuplicadoRetornaBadRequest() throws Exception {
-
-        CajaRequest request =
-                new CajaRequest(12345L, "Caja Principal", new UsuarioCajaRequest(1L, "test@test.com", "1234" ));
 
         doThrow(new NroCajaYaExistenteException("Número de caja existente"))
                 .when(cajaService)
@@ -85,9 +87,6 @@ class CajaControllerTest {
 
     @Test
     void recuperarCaja() throws Exception {
-
-        Usuario usuario = new Usuario();
-        usuario.setIdUsuario(1L);
 
         Caja caja = new Caja(12345L, "Caja Principal", usuario );
 
@@ -116,9 +115,6 @@ class CajaControllerTest {
     void actualizarCaja() throws Exception {
 
         CajaActualizarRequest request = new CajaActualizarRequest(99999L, "Nuevo Alias", TipoCaja.CajaCorriente );
-
-        Usuario usuario = new Usuario();
-        usuario.setIdUsuario(1L);
 
         Caja cajaActualizada = new Caja(99999L, "Nuevo Alias", usuario );
 

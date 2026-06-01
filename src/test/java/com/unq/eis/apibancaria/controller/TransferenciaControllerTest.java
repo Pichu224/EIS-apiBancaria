@@ -44,12 +44,29 @@ public class TransferenciaControllerTest {
     @InjectMocks
     private TransferenciaController transferenciaController;
 
+    private Usuario usuario;
+    private Caja origen;
+    private Caja destino;
+    private Transferencia transferencia;
+
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(transferenciaController)
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .build();
+
+        this.usuario = new Usuario();
+        usuario.setIdUsuario(1L);
+
+        this.origen = new Caja(1111L, "Origen", usuario);
+        origen.setIdCaja(1L);
+
+        this.destino = new Caja(2222L, "Destino", usuario);
+        destino.setIdCaja(2L);
+
+        this.transferencia = new Transferencia(BigDecimal.valueOf(500), origen, destino);
+        transferencia.setIdTransferencia(10L);
     }
 
     @Test
@@ -70,19 +87,6 @@ public class TransferenciaControllerTest {
     @Test
     public void recuperarTransferencia() throws Exception {
 
-        Usuario usuario = new Usuario();
-        usuario.setIdUsuario(1L);
-
-        Caja origen = new Caja(1111L, "Origen", usuario);
-        origen.setIdCaja(1L);
-
-        Caja destino = new Caja(2222L, "Destino", usuario);
-        destino.setIdCaja(2L);
-
-        Transferencia transferencia = new Transferencia(BigDecimal.valueOf(500), origen, destino);
-
-        transferencia.setIdTransferencia(10L);
-
         when(transferenciaService.recuperar(10L)).thenReturn(transferencia);
 
         mockMvc.perform(get(BASE_URL + "/10")).andExpect(status().isOk());
@@ -92,19 +96,6 @@ public class TransferenciaControllerTest {
 
     @Test
     public void recuperarTransferenciaDevuelveDatosCorrectos() throws Exception {
-
-        Usuario usuario = new Usuario();
-        usuario.setIdUsuario(1L);
-
-        Caja origen = new Caja(1111L, "Origen", usuario);
-        origen.setIdCaja(1L);
-
-        Caja destino = new Caja(2222L, "Destino", usuario);
-        destino.setIdCaja(2L);
-
-        Transferencia transferencia = new Transferencia(BigDecimal.valueOf(500), origen, destino );
-
-        transferencia.setIdTransferencia(10L);
 
         when(transferenciaService.recuperar(10L)).thenReturn(transferencia);
 

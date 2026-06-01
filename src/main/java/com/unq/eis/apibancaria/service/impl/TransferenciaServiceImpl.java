@@ -30,6 +30,7 @@ public class TransferenciaServiceImpl implements TransferenciaService {
         return cajaDao.findById(idCaja).orElseThrow(() -> new CajaInexistenteException("Caja no encontrada!"));
     }
 
+    @Override
     public Transferencia tranferir(Long idCajaOrigen, Long idCajaDestino, BigDecimal montoTotal){
         Caja cajaOrigen = recuperarCajaDeBD(idCajaOrigen);
         Caja cajaDestino = recuperarCajaDeBD(idCajaDestino);
@@ -45,7 +46,7 @@ public class TransferenciaServiceImpl implements TransferenciaService {
 
         return transferencia;
     }
-
+    @Override
     @Transactional(readOnly = true)
     public Transferencia recuperar(Long idTransferencia){
         return transferenciaDao.findById(idTransferencia)

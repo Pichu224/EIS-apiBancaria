@@ -28,6 +28,6 @@ public class MovimientoTest {
         assertEquals(1L, movimiento.getNroTransferencia());
         assertEquals(caja, movimiento.getCajaUtilizada());
         assertEquals(BigDecimal.ONE, movimiento.getMonto());
-        assertEquals("NroCaja : 1 realizo transferencia hacia la caja : 2", movimiento.getDescripcion());
+        assertEquals("Transferencia desde caja 1 hacia caja 2", movimiento.getDescripcion());
     }
 }

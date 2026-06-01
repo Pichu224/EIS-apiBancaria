@@ -35,13 +35,13 @@ public class Movimiento {
     @JoinColumn(name = "id_caja", nullable = false)
     private Caja cajaUtilizada;
 
-    public Movimiento(@NonNull Long nroTransferencia, @NonNull Caja cajaUtilizada, @NonNull BigDecimal monto, @NonNull String descripcion) {
+    public Movimiento(@NonNull Long nroTransferencia, @NonNull Caja cajaUtilizada, @NonNull BigDecimal monto, @NonNull String nroCajaDestino) {
         this.nroTransferencia = nroTransferencia;
         this.cajaUtilizada = cajaUtilizada;
         this.validarMonto(monto);
         this.monto = monto;
-        // Esto puede ser modificado para que quede mejor la descricion.
-        this.descripcion = "NroCaja : " + cajaUtilizada.getNroCaja() + " realizo transferencia hacia la caja : " + descripcion;
+        // Esto puede ser modificado para que quede mejor la descripcion.
+        this.descripcion = "Transferencia desde caja " + cajaUtilizada.getNroCaja() + " hacia caja " + nroCajaDestino;;
     }
 
     private void validarMonto(BigDecimal monto) {
