@@ -23,11 +23,11 @@ public class MovimientoTest {
 
     @Test
     public void CreacionMovimientoExitosa(){
-        movimiento = new Movimiento(1L,caja, BigDecimal.ONE,"PrimerTransferencia");
+        movimiento = new Movimiento(1L,caja, BigDecimal.ONE,"2");
 
         assertEquals(1L, movimiento.getNroTransferencia());
         assertEquals(caja, movimiento.getCajaUtilizada());
         assertEquals(BigDecimal.ONE, movimiento.getMonto());
-        assertEquals("PrimerTransferencia", movimiento.getDescripcion());
+        assertEquals("Transferencia desde caja 1 hacia caja 2", movimiento.getDescripcion());
     }
 }

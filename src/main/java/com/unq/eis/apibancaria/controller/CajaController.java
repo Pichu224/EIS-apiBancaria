@@ -1,5 +1,7 @@
 package com.unq.eis.apibancaria.controller;
+import com.unq.eis.apibancaria.controller.dto.request.CajaActualizarRequest;
 import com.unq.eis.apibancaria.controller.dto.request.CajaRequest;
+import com.unq.eis.apibancaria.controller.dto.response.CajaInfoResponse;
 import com.unq.eis.apibancaria.controller.dto.response.CajaResponse;
 import com.unq.eis.apibancaria.controller.mapper.CajaMapper;
 import com.unq.eis.apibancaria.modelo.Caja;
@@ -8,8 +10,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/cajas")
@@ -34,8 +34,11 @@ public class CajaController {
     }
 
     @PutMapping("/{idCaja}")
-    public ResponseEntity<Caja> actualizar(@PathVariable Long idCaja, @RequestBody Caja caja) {
-        return ResponseEntity.ok(cajaService.actualizar(idCaja, caja));
+    public ResponseEntity<CajaInfoResponse> actualizar(@PathVariable Long idCaja, @RequestBody CajaActualizarRequest caja) {
+        Caja cajaActual = CajaMapper.aModelo(caja);
+        cajaActual.setIdCaja(idCaja);
+        CajaInfoResponse cajaResponse = CajaMapper.desdeModeloInfo(cajaService.actualizar(idCaja, cajaActual));
+        return ResponseEntity.ok(cajaResponse);
     }
 
     @DeleteMapping("/{idCaja}")
@@ -45,13 +48,13 @@ public class CajaController {
     }
 
     @PutMapping("/{idCaja}/depositar")
-    public ResponseEntity<Void> depositar(@PathVariable Long idCaja, @RequestBody CajaResponse caja) {
+    public ResponseEntity<Void> depositar(@PathVariable Long idCaja, @RequestBody CajaInfoResponse caja) {
         cajaService.depositar(idCaja, CajaMapper.aModeloMonto(caja));
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{idCaja}/retirar")
-    public ResponseEntity<Void> retirar(@PathVariable Long idCaja, @RequestBody CajaResponse caja) {
+    public ResponseEntity<Void> retirar(@PathVariable Long idCaja, @RequestBody CajaInfoResponse caja) {
         cajaService.retirar(idCaja, CajaMapper.aModeloMonto(caja));
         return ResponseEntity.ok().build();
     }
