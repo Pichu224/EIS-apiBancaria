@@ -1,5 +1,6 @@
 package com.unq.eis.apibancaria.controller.mapper;
 
+import com.unq.eis.apibancaria.controller.dto.request.UsuarioActualizarRequest;
 import com.unq.eis.apibancaria.controller.dto.request.UsuarioCajaRequest;
 import com.unq.eis.apibancaria.controller.dto.request.UsuarioRequest;
 import com.unq.eis.apibancaria.controller.dto.response.UsuarioCompletoResponse;
@@ -14,6 +15,16 @@ public class UserMapper {
         return new Usuario(
                 request.email(),
                 request.contrasenia()
+        );
+    }
+
+    static public Usuario aModelo(UsuarioActualizarRequest request){
+        return new Usuario(
+                request.email(),
+                request.contrasenia(),
+                request.nombre(),
+                request.apellido(),
+                request.dni()
         );
     }
 

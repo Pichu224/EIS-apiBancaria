@@ -1,5 +1,6 @@
 package com.unq.eis.apibancaria.controller;
 
+import com.unq.eis.apibancaria.controller.dto.request.UsuarioActualizarRequest;
 import com.unq.eis.apibancaria.controller.dto.request.UsuarioRequest;
 import com.unq.eis.apibancaria.controller.dto.response.UsuarioCompletoResponse;
 import com.unq.eis.apibancaria.controller.dto.response.UsuarioResponse;
@@ -43,10 +44,10 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioResponse> actualizarUsuario(@Valid @PathVariable Long id, @RequestBody UsuarioRequest usuarioRequest){
+    public ResponseEntity<UsuarioCompletoResponse> actualizarUsuario(@Valid @PathVariable Long id, @RequestBody UsuarioActualizarRequest usuarioRequest){
         Usuario usuario = UserMapper.aModelo(usuarioRequest);
         this.usuarioService.actualizar(id, usuario);
-        UsuarioResponse usuarioResponse = UserMapper.desdeModelo(usuario);
+        UsuarioCompletoResponse usuarioResponse = UserMapper.desdeModeloCompleto(usuario);
         return ResponseEntity.ok(usuarioResponse);
     }
 
