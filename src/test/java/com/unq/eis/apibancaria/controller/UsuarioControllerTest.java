@@ -1,5 +1,6 @@
 package com.unq.eis.apibancaria.controller;
 
+import com.unq.eis.apibancaria.exception.UsuarioInexistenteException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,7 +44,10 @@ public class UsuarioControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(usuarioController).build();
+        mockMvc = MockMvcBuilders
+                .standaloneSetup(usuarioController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
     }
 
     @Test
@@ -113,6 +117,51 @@ public class UsuarioControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(usuarioService).eliminar(1L);
+    }
+
+    @Test
+    void loginExitoso() throws Exception {
+
+        UsuarioRequest request =  new UsuarioRequest("test@test.com","secret");
+
+        Usuario usuario = new Usuario(
+                "test@test.com",
+                "secret",
+                "Nico",
+                "Vaccaro",
+                "12345678"
+        );
+
+        usuario.setIdUsuario(1L);
+
+        when(usuarioService.login("test@test.com","secret")).thenReturn(usuario);
+
+        mockMvc.perform(post(BASE_URL + "/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.email").value("test@test.com"))
+                .andExpect(jsonPath("$.nombre").value("Nico"))
+                .andExpect(jsonPath("$.apellido").value("Vaccaro"))
+                .andExpect(jsonPath("$.dni").value("12345678"));
+
+        verify(usuarioService).login("test@test.com","secret");
+    }
+
+    @Test
+    void loginConCredencialesIncorrectas() throws Exception {
+
+        UsuarioRequest request = new UsuarioRequest("test@test.com","incorrecta");
+
+        when(usuarioService.login("test@test.com","incorrecta")).thenThrow(new UsuarioInexistenteException("Email o contraseña incorrectos"));
+
+        mockMvc.perform(post(BASE_URL + "/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound());
+
+        verify(usuarioService).login("test@test.com", "incorrecta");
     }
 }
 

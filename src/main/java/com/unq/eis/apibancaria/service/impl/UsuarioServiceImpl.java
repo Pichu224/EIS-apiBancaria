@@ -67,4 +67,11 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .orElseThrow( () -> new CajaInexistenteException("Caja no encontrada"));
         return usuarioRec.consultarSaldo(cajaRec);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Usuario login(String email, String contrasenia){
+        return usuarioDao.findByEmailAndContrasenia(email,contrasenia)
+                .orElseThrow(() ->  new UsuarioInexistenteException("Email o contraseña incorrectos"));
+    }
 }

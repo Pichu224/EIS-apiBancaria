@@ -52,8 +52,8 @@ public class Usuario {
 
     @OneToMany(mappedBy = "usuario",
             cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,  // Trae solo las cajas si es necesario, es decir, cuando se las llama.
-            orphanRemoval = true)   // Permite que si se borra una caja, cuando le pegemos a la BD, este se actualiza sola al pasarle el usuario. Evitando tener que borrar la caja con otra peticion a la BD.
+            fetch = FetchType.LAZY,
+            orphanRemoval = true)
     private final List<Caja> cajas = new ArrayList<>();
 
     public Usuario(String email, String contrasenia, String nombre, String apellido, String dni) {

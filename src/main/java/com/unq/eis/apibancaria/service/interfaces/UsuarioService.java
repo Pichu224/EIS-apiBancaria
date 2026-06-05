@@ -10,4 +10,5 @@ public interface UsuarioService {
     Usuario actualizar(Long id, Usuario usuario);
     void eliminar(Long idUsuario);
     BigDecimal consultarSaldo(Long idUsuario, Long idCaja);
+    Usuario login(String email, String contrasenia);
 }

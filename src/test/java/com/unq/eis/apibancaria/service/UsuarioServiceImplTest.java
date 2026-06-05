@@ -2,6 +2,7 @@ package com.unq.eis.apibancaria.service;
 
 import java.util.Optional;
 
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.anyString;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -155,6 +158,31 @@ public class UsuarioServiceImplTest {
     @Test
     public void BorrarUsuarioQueNoPosseId(){
         assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.eliminar(null));
+    }
+
+    @Test
+    public void loginExitoso() {
+
+        Usuario usuario = new Usuario("test@test.com","1234","Nico","Vaccaro","12345678");
+
+        when(usuarioDAO.findByEmailAndContrasenia("test@test.com","1234")).thenReturn(Optional.of(usuario));
+
+        Usuario resultado = serviceUsuario.login("test@test.com","1234");
+
+        assertNotNull(resultado);
+        assertEquals("test@test.com", resultado.getEmail());
+
+        verify(usuarioDAO).findByEmailAndContrasenia("test@test.com","1234");
+    }
+    @Test
+    public void loginConCredencialesIncorrectas() {
+
+        when(usuarioDAO.findByEmailAndContrasenia("test@test.com","incorrecta")).thenReturn(Optional.empty());
+
+        UsuarioInexistenteException exception = assertThrows(UsuarioInexistenteException.class, () -> serviceUsuario.login("test@test.com","incorrecta"));
+
+        assertEquals("Email o contraseña incorrectos",exception.getMessage());
+        verify(usuarioDAO).findByEmailAndContrasenia("test@test.com","incorrecta");
     }
 
 }
