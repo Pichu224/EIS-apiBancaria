@@ -5,10 +5,7 @@ import com.unq.eis.apibancaria.controller.dto.request.CajaActualizarRequest;
 import com.unq.eis.apibancaria.controller.dto.request.CajaRequest;
 import com.unq.eis.apibancaria.controller.dto.request.UsuarioCajaRequest;
 import com.unq.eis.apibancaria.controller.dto.response.CajaInfoResponse;
-import com.unq.eis.apibancaria.exception.CajaInexistenteException;
-import com.unq.eis.apibancaria.exception.MontoInvalidoException;
-import com.unq.eis.apibancaria.exception.NroCajaYaExistenteException;
-import com.unq.eis.apibancaria.exception.SaldoInsuficienteException;
+import com.unq.eis.apibancaria.exception.*;
 import com.unq.eis.apibancaria.modelo.Caja;
 import com.unq.eis.apibancaria.modelo.TipoCaja;
 import com.unq.eis.apibancaria.modelo.Usuario;
@@ -24,11 +21,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -197,5 +196,57 @@ class CajaControllerTest {
                 .andExpect(status().isUnprocessableEntity());
 
         verify(cajaService).retirar(eq(1L), any(BigDecimal.class));
+    }
+
+    @Test
+    void recuperarCajasDeUsuario() throws Exception {
+
+        Caja caja1 = new Caja(11111L,"Caja Ahorro",usuario);
+
+        caja1.setIdCaja(1L);
+        caja1.setSaldo(BigDecimal.valueOf(1000));
+
+        Caja caja2 = new Caja(22222L,"Caja Secundaria",usuario);
+
+        caja2.setIdCaja(2L);
+        caja2.setSaldo(BigDecimal.valueOf(500));
+
+        when(cajaService.recuperarCajasdeUsuario(1L)).thenReturn(List.of(caja1, caja2));
+
+        mockMvc.perform(get(BASE_URL + "/1/cajas"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2));
+
+        verify(cajaService).recuperarCajasdeUsuario(1L);
+    }
+    @Test
+    void recuperarCajasDeUsuarioDevuelveDatosCorrectos() throws Exception {
+
+        Caja caja = new Caja(11111L,"Caja Principal", usuario);
+
+        caja.setIdCaja(1L);
+        caja.setSaldo(BigDecimal.valueOf(1000));
+
+        when(cajaService.recuperarCajasdeUsuario(1L))
+                .thenReturn(List.of(caja));
+
+        mockMvc.perform(get(BASE_URL + "/1/cajas"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].nroCaja").value(11111))
+                .andExpect(jsonPath("$[0].alias").value("Caja Principal"))
+                .andExpect(jsonPath("$[0].saldo").value(1000));
+
+        verify(cajaService).recuperarCajasdeUsuario(1L);
+    }
+    @Test
+    void recuperarCajasDeUsuarioInexistente() throws Exception {
+
+        when(cajaService.recuperarCajasdeUsuario(99L)).thenThrow(
+                        new UsuarioInexistenteException("El usuario no existe!"));
+
+        mockMvc.perform(get(BASE_URL + "/99/cajas")).andExpect(status().isNotFound());
+
+        verify(cajaService).recuperarCajasdeUsuario(99L);
     }
 }

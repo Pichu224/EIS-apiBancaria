@@ -4,10 +4,14 @@ import com.unq.eis.apibancaria.modelo.Caja;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface CajaDAO extends JpaRepository<Caja, Long> {
 
     boolean existsByNroCaja(Long nroCaja);
 
     boolean existsByAlias(String alias);
+
+    List<Caja> findByUsuario_IdUsuario(Long idUsuario);
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -79,5 +80,15 @@ public class CajaServiceImpl implements CajaService {
 
         if(cajaDao.existsByAlias(caja.getAlias()))
             throw new AliasYaExistenteException("Ya existe el alias ingresado");
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Caja> recuperarCajasdeUsuario(Long idUsuario){
+
+        if(!usuarioDAO.existsById(idUsuario)) {
+            throw new UsuarioInexistenteException("El usuario no existe!");
+        }
+        return cajaDao.findByUsuario_IdUsuario(idUsuario);
     }
 }

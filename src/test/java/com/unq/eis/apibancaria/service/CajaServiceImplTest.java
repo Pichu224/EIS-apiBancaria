@@ -1,6 +1,7 @@
 package com.unq.eis.apibancaria.service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,9 +12,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.when;
+
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.unq.eis.apibancaria.exception.AliasYaExistenteException;
@@ -295,4 +298,42 @@ public class CajaServiceImplTest {
         assertThrows(CajaInexistenteException.class, () -> serviceCaja.retirar(1L, BigDecimal.ONE));
     }
 
+    @Test
+    public void recuperarCajasDeUsuarioRetornaLasCajasDelUsuario() {
+
+        Long idUsuario = 1L;
+
+        List<Caja> cajas = List.of(cajaTest1, cajaTest2);
+
+        when(usuarioDAO.existsById(idUsuario))
+                .thenReturn(true);
+
+        when(cajaDAO.findByUsuario_IdUsuario(idUsuario))
+                .thenReturn(cajas);
+
+        List<Caja> resultado = serviceCaja.recuperarCajasdeUsuario(idUsuario);
+
+        assertEquals(2, resultado.size());
+        assertEquals(cajas, resultado);
+
+        verify(usuarioDAO).existsById(idUsuario);
+        verify(cajaDAO).findByUsuario_IdUsuario(idUsuario);
+    }
+
+    @Test
+    public void recuperarCajasDeUsuarioFallaCuandoUsuarioNoExiste() {
+
+        Long idUsuario = 1L;
+
+        when(usuarioDAO.existsById(idUsuario))
+                .thenReturn(false);
+
+        UsuarioInexistenteException exception = assertThrows(UsuarioInexistenteException.class, () -> serviceCaja.recuperarCajasdeUsuario(idUsuario));
+
+        assertEquals("El usuario no existe!", exception.getMessage());
+
+        verify(usuarioDAO).existsById(idUsuario);
+
+        verify(cajaDAO, never()).findByUsuario_IdUsuario(anyLong());
+    }
 }

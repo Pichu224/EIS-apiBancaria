@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/cajas")
 @AllArgsConstructor
@@ -58,4 +60,11 @@ public class CajaController {
         cajaService.retirar(idCaja, CajaMapper.aModeloMonto(caja));
         return ResponseEntity.ok().build();
     }
+    @GetMapping("/{idUsuario}/cajas")
+    public ResponseEntity<List<CajaInfoResponse>> recuperarCajasdeUsuario(@PathVariable Long idUsuario){
+        List<Caja> cajasModelo = cajaService.recuperarCajasdeUsuario(idUsuario);
+        List<CajaInfoResponse> responsesCajas = CajaMapper.desdeModeloCajas(cajasModelo);
+        return ResponseEntity.ok(responsesCajas);
+    }
+
 }
