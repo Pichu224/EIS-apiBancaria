@@ -17,7 +17,6 @@ import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.unq.eis.apibancaria.exception.EmailYaExistenteException;
-import com.unq.eis.apibancaria.exception.IdNuloException;
 import com.unq.eis.apibancaria.exception.UsuarioInexistenteException;
 import com.unq.eis.apibancaria.modelo.Usuario;
 import com.unq.eis.apibancaria.persistence.UsuarioDAO;

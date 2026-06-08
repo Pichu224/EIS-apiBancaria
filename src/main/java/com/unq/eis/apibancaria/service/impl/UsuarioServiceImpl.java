@@ -1,7 +1,6 @@
 package com.unq.eis.apibancaria.service.impl;
 
 import com.unq.eis.apibancaria.exception.CajaInexistenteException;
-import com.unq.eis.apibancaria.exception.IdNuloException;
 import com.unq.eis.apibancaria.modelo.Caja;
 import com.unq.eis.apibancaria.modelo.Usuario;
 import com.unq.eis.apibancaria.exception.EmailYaExistenteException;

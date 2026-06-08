@@ -1,9 +1,7 @@
 package com.unq.eis.apibancaria.service.impl;
 
 import com.unq.eis.apibancaria.exception.CajaInexistenteException;
-import com.unq.eis.apibancaria.exception.IdNuloException;
 import com.unq.eis.apibancaria.exception.TransferenciaInexistenteException;
-import com.unq.eis.apibancaria.exception.UsuarioInexistenteException;
 import com.unq.eis.apibancaria.modelo.Caja;
 import com.unq.eis.apibancaria.modelo.Movimiento;
 import com.unq.eis.apibancaria.modelo.Transferencia;
@@ -31,9 +29,9 @@ public class TransferenciaServiceImpl implements TransferenciaService {
     }
 
     @Override
-    public Transferencia tranferir(Long idCajaOrigen, Long idCajaDestino, BigDecimal montoTotal){
+    public Transferencia tranferir(Long idCajaOrigen, String aliasDestino, BigDecimal montoTotal){
         Caja cajaOrigen = recuperarCajaDeBD(idCajaOrigen);
-        Caja cajaDestino = recuperarCajaDeBD(idCajaDestino);
+        Caja cajaDestino = cajaDao.findByAlias(aliasDestino).orElseThrow(() -> new CajaInexistenteException("Caja no encontrada!"));
 
         cajaOrigen.retirar(montoTotal);
         cajaDestino.depositar(montoTotal);

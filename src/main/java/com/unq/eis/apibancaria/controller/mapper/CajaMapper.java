@@ -53,6 +53,9 @@ public class CajaMapper {
     static public BigDecimal aModeloMonto(CajaInfoResponse response) {
         return response.saldo();
     }
+    static public String aModeloAlias(CajaInfoResponse reponse){
+        return reponse.alias();
+    }
     static public List<CajaInfoResponse> desdeModeloCajas(List<Caja> modelos){
         return modelos.stream().map(CajaMapper::desdeModeloInfo).toList();
     }

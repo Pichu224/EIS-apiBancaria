@@ -21,7 +21,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.unq.eis.apibancaria.exception.AliasYaExistenteException;
 import com.unq.eis.apibancaria.exception.CajaInexistenteException;
-import com.unq.eis.apibancaria.exception.IdNuloException;
 import com.unq.eis.apibancaria.exception.MontoInvalidoException;
 import com.unq.eis.apibancaria.exception.NroCajaYaExistenteException;
 import com.unq.eis.apibancaria.exception.SaldoInsuficienteException;

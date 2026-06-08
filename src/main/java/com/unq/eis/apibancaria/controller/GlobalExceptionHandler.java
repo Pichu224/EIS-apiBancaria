@@ -33,11 +33,6 @@ public class GlobalExceptionHandler {
         ErrorResponse errorDetails = new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
-    @ExceptionHandler(IdNuloException.class)
-    public ResponseEntity<?> handlerIdNuloException(IdNuloException e, WebRequest request){
-        ErrorResponse errorDetails = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage(), request.getDescription(false));
-        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
-    }
 
     @ExceptionHandler(NroCajaYaExistenteException.class)
     public ResponseEntity<?> handlerNroCajaYaExistenteException(NroCajaYaExistenteException e, WebRequest request){

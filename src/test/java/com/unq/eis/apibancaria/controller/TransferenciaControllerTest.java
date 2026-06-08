@@ -72,16 +72,21 @@ public class TransferenciaControllerTest {
     @Test
     public void transferirDinero() throws Exception {
 
-        CajaInfoResponse request = new CajaInfoResponse(1L, 12345L, "Caja Origen", TipoCaja.CajaAhorro, BigDecimal.valueOf(500) );
+        CajaInfoResponse request = new CajaInfoResponse(1L, 12345L, "Caja", TipoCaja.CajaAhorro, BigDecimal.valueOf(500) );
 
         mockMvc.perform(
-                        post(BASE_URL + "/1/transferir/2")
+                        post(BASE_URL + "/1/transferir")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
                 )
                 .andExpect(status().isOk());
 
-        verify(transferenciaService).tranferir(1L, 2L, BigDecimal.valueOf(500) );
+        verify(transferenciaService)
+                .tranferir(
+                        1L,
+                        "Caja",
+                        BigDecimal.valueOf(500)
+                );
     }
 
     @Test
@@ -114,11 +119,14 @@ public class TransferenciaControllerTest {
 
         doThrow(new CajaInexistenteException("Caja no encontrada"))
                 .when(transferenciaService)
-                .tranferir(eq(1L), eq(2L), any(BigDecimal.class)
+                .tranferir(
+                        eq(1L),
+                        eq("Caja"),
+                        any(BigDecimal.class)
                 );
 
         mockMvc.perform(
-                        post(BASE_URL + "/1/transferir/2")
+                        post(BASE_URL + "/1/transferir")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
                 )
@@ -143,11 +151,14 @@ public class TransferenciaControllerTest {
 
         doThrow(new SaldoInsuficienteException("Saldo insuficiente"))
                 .when(transferenciaService)
-                .tranferir(eq(1L), eq(2L), any(BigDecimal.class)
+                .tranferir(
+                        eq(1L),
+                        eq("Caja"),
+                        any(BigDecimal.class)
                 );
 
         mockMvc.perform(
-                        post(BASE_URL + "/1/transferir/2")
+                        post(BASE_URL + "/1/transferir")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
                 )
@@ -161,11 +172,14 @@ public class TransferenciaControllerTest {
 
         doThrow(new MontoInvalidoException("Monto inválido"))
                 .when(transferenciaService)
-                .tranferir(eq(1L), eq(2L), any(BigDecimal.class)
+                .tranferir(
+                        eq(1L),
+                        eq("Caja"),
+                        any(BigDecimal.class)
                 );
 
         mockMvc.perform(
-                        post(BASE_URL + "/1/transferir/2")
+                        post(BASE_URL + "/1/transferir")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
                 )

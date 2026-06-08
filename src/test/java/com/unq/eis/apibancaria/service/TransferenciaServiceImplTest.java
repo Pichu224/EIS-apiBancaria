@@ -17,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.unq.eis.apibancaria.exception.CajaInexistenteException;
-import com.unq.eis.apibancaria.exception.IdNuloException;
 import com.unq.eis.apibancaria.modelo.Caja;
 import com.unq.eis.apibancaria.modelo.Transferencia;
 import com.unq.eis.apibancaria.modelo.Usuario;
@@ -72,7 +71,7 @@ public class TransferenciaServiceImplTest {
 
         // Mock DAOs: return the cajas when searched by id
         org.mockito.Mockito.when(cajaDAO.findById(cajaTest1.getIdCaja())).thenReturn(Optional.of(cajaTest1));
-        org.mockito.Mockito.when(cajaDAO.findById(cajaTest2.getIdCaja())).thenReturn(Optional.of(cajaTest2));
+        org.mockito.Mockito.when(cajaDAO.findByAlias(cajaTest2.getAlias())).thenReturn(Optional.of(cajaTest2));
 
         // Mock save to assign an id and return the transferencia
         org.mockito.Mockito.when(transferenciaDAO.save(org.mockito.ArgumentMatchers.any(Transferencia.class)))
@@ -82,12 +81,12 @@ public class TransferenciaServiceImplTest {
                     return t;
                 });
 
-        Transferencia transferencia = serviceTransferir.tranferir(cajaTest1.getIdCaja(), cajaTest2.getIdCaja(), BigDecimal.valueOf(500L));
+        Transferencia transferencia = serviceTransferir.tranferir(cajaTest1.getIdCaja(), cajaTest2.getAlias(), BigDecimal.valueOf(500L));
 
         // Se valida como se "persistio" la transferencia (mock)
         assertNotNull(transferencia.getIdTransferencia());
         assertEquals(cajaTest1.getIdCaja(), transferencia.getCajaOrigen().getIdCaja());
-        assertEquals(cajaTest2.getIdCaja(), transferencia.getCajaDestino().getIdCaja());
+        assertEquals(cajaTest2.getAlias(), transferencia.getCajaDestino().getAlias());
         assertEquals(0, transferencia.getMontoTotal().compareTo(BigDecimal.valueOf(500L)));
         assertNotNull(transferencia.getFechaRealizado());
         assertFalse(transferencia.getFechaRealizado().isAfter(LocalDateTime.now()));
@@ -100,14 +99,14 @@ public class TransferenciaServiceImplTest {
     @Test
     public void ErrorTransferirConCajasSinId(){
 
-        assertThrows(CajaInexistenteException.class, () -> serviceTransferir.tranferir(null, 1L, BigDecimal.ONE));
+        assertThrows(CajaInexistenteException.class, () -> serviceTransferir.tranferir(null, cajaTest1.getAlias(), BigDecimal.ONE));
         assertThrows(CajaInexistenteException.class, () -> serviceTransferir.tranferir(1L,null,BigDecimal.ONE));
     }
     @Test
     public void ErrorTransferirConCajasSinPersistir(){
         // Simular que las cajas no existen en la BD
         org.mockito.Mockito.when(cajaDAO.findById(org.mockito.ArgumentMatchers.anyLong())).thenReturn(Optional.empty());
-        assertThrows(CajaInexistenteException.class, () -> serviceTransferir.tranferir(1L, 2L, BigDecimal.ONE));
+        assertThrows(CajaInexistenteException.class, () -> serviceTransferir.tranferir(1L, cajaTest1.getAlias(), BigDecimal.ONE));
     }
 
 }

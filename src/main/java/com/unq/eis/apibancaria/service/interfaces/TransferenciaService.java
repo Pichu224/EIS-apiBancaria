@@ -7,6 +7,6 @@ import java.math.BigDecimal;
 
 public interface TransferenciaService {
 
-    Transferencia tranferir(Long idCajaOrigen, Long idCajaDestino, BigDecimal montoTotal);
+    Transferencia tranferir(Long idCajaOrigen, String cajaDestino, BigDecimal montoTotal);
     Transferencia recuperar(Long idTransferencia);
 }

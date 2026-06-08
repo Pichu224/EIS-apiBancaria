@@ -17,10 +17,9 @@ public class TransferenciaController {
 
     private final TransferenciaServiceImpl transferenciaService;
 
-    @PostMapping("/{idCajaOrigen}/transferir/{idCajaDestino}")
-    public ResponseEntity<Void> transferir(@PathVariable Long idCajaOrigen, @PathVariable Long idCajaDestino, @RequestBody CajaInfoResponse caja){
-        // Lo deje para la prueba la 'caja', se puede cambiar si hacer un dto particular para el monto o no.
-        transferenciaService.tranferir(idCajaOrigen, idCajaDestino, CajaMapper.aModeloMonto(caja));
+    @PostMapping("/{idCajaOrigen}/transferir")
+    public ResponseEntity<Void> transferir(@PathVariable Long idCajaOrigen, @RequestBody CajaInfoResponse caja){
+        transferenciaService.tranferir(idCajaOrigen, CajaMapper.aModeloAlias(caja), CajaMapper.aModeloMonto(caja));
         return ResponseEntity.ok().build();
     }
 
