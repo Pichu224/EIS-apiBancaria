@@ -51,11 +51,6 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioResponse);
     }
 
-    @GetMapping("/{idUsuario}/cajas/{idCaja}/consultarSaldo")
-    public ResponseEntity<BigDecimal> consultarSaldo(@PathVariable Long idUsuario, @PathVariable Long idCaja){
-        BigDecimal saldo = usuarioService.consultarSaldo(idUsuario, idCaja);
-        return ResponseEntity.ok(saldo);
-    }
 
     @PostMapping("/login")
     public ResponseEntity<UsuarioCompletoResponse> login(@RequestBody UsuarioRequest usuarioRequest){

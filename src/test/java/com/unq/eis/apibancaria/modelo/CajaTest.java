@@ -15,6 +15,8 @@ public class CajaTest {
     private Usuario usuario1;
     private Usuario usuario2;
     private Caja caja1;
+    private Caja caja2;
+    private Caja caja3;
 
     @BeforeEach
     void setUp(){
@@ -26,11 +28,26 @@ public class CajaTest {
     @Test
     public void CreacionDeCaja(){
 
+        caja2 = new Caja(2L,102L,"caja2.test2.api",usuario1);
+        caja3 = new Caja(103L,"caja3.test.api",TipoCaja.CajaAhorro);
+
         assertEquals(1L, caja1.getNroCaja());
         assertEquals("testCaja", caja1.getAlias());
         assertEquals(BigDecimal.ZERO, caja1.getSaldo());
         assertEquals(TipoCaja.CajaAhorro, caja1.getTipoCaja());
         assertEquals(caja1.getUsuario().getNombre(), usuario1.getNombre());
+
+        assertEquals(2L, caja2.getIdCaja());
+        assertEquals(102L, caja2.getNroCaja());
+        assertEquals("caja2.test2.api", caja2.getAlias());
+        assertEquals(BigDecimal.ZERO, caja2.getSaldo());
+        assertEquals(TipoCaja.CajaAhorro, caja2.getTipoCaja());
+        assertEquals(caja2.getUsuario().getNombre(), usuario1.getNombre());
+
+        assertEquals(103L, caja3.getNroCaja());
+        assertEquals("caja3.test.api", caja3.getAlias());
+        assertEquals(BigDecimal.ZERO, caja3.getSaldo());
+        assertEquals(TipoCaja.CajaAhorro, caja3.getTipoCaja());
     }
 
     @Test

@@ -249,4 +249,32 @@ class CajaControllerTest {
 
         verify(cajaService).recuperarCajasdeUsuario(99L);
     }
+
+    @Test
+    void actualizarCajaConAliasYaExistente() throws Exception {
+
+        CajaActualizarRequest request = new CajaActualizarRequest(12345L, "AliasExistente", TipoCaja.CajaAhorro);
+
+        doThrow(new AliasYaExistenteException("Ya existe una caja con ese alias.")).when(cajaService).actualizar(eq(1L), any(Caja.class));
+
+        mockMvc.perform(put(BASE_URL + "/1").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("Ya existe una caja con ese alias."));
+
+        verify(cajaService).actualizar(eq(1L), any(Caja.class));
+    }
+
+    @Test
+    void actualizarCajaConNumeroYaExistente() throws Exception {
+
+        CajaActualizarRequest request = new CajaActualizarRequest(12345L,"NuevoAlias", TipoCaja.CajaAhorro);
+
+        doThrow(new NroCajaYaExistenteException("Ya existe una caja con ese número asignado.")).when(cajaService).actualizar(eq(1L), any(Caja.class));
+
+        mockMvc.perform(put(BASE_URL + "/1").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("Ya existe una caja con ese número asignado."));
+
+        verify(cajaService).actualizar(eq(1L),any(Caja.class));
+    }
 }

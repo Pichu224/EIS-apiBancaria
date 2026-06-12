@@ -1,19 +1,22 @@
 package com.unq.eis.apibancaria.modelo;
 
+import com.unq.eis.apibancaria.exception.MontoInvalidoException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class MovimientoTest {
 
     private Usuario usuario;
     private Caja caja;
     private Movimiento movimiento;
+    private Movimiento movimiento1;
+    private Movimiento movimiento2;
 
     @BeforeEach
     void setUp(){
@@ -29,5 +32,11 @@ public class MovimientoTest {
         assertEquals(caja, movimiento.getCajaUtilizada());
         assertEquals(BigDecimal.ONE, movimiento.getMonto());
         assertEquals("Transferencia desde caja 1 hacia caja 2", movimiento.getDescripcion());
+    }
+    @Test
+    public void ErrorCrearMovimientoMontoInvalido(){
+
+        assertThrows(MontoInvalidoException.class, ()->{movimiento1 = new Movimiento(1L,caja, BigDecimal.ZERO,"2");});
+        assertThrows(MontoInvalidoException.class, ()->{movimiento2 = new Movimiento(1L,caja, BigDecimal.valueOf(-1L),"2");});
     }
 }

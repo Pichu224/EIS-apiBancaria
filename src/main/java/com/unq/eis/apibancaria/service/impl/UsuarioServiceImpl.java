@@ -60,14 +60,6 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public BigDecimal consultarSaldo(Long idUsuario, Long idCaja){
-        Usuario usuarioRec = this.recuperar(idUsuario);
-        Caja cajaRec = cajaDAO.findById(idCaja)
-                .orElseThrow( () -> new CajaInexistenteException("Caja no encontrada"));
-        return usuarioRec.consultarSaldo(cajaRec);
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public Usuario login(String email, String contrasenia){
         return usuarioDao.findByEmailAndContrasenia(email,contrasenia)

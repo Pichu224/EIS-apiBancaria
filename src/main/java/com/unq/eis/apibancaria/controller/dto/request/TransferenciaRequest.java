@@ -1,4 +1,0 @@
-package com.unq.eis.apibancaria.controller.dto.request;
-
-public record TransferenciaRequest() {
-}

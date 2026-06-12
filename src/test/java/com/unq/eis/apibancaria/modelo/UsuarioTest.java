@@ -13,6 +13,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UsuarioTest {
 
     private Usuario userTest;
+    private Usuario usuario1;
+    private Usuario usuario2;
 
     @BeforeEach
     void setUp(){
@@ -21,11 +23,23 @@ public class UsuarioTest {
 
     @Test
     public void CreacionUsuario(){
+
+        usuario1 = new Usuario("test1@gmail.com", "12345");
+        usuario2 = new Usuario(1L,"test2@gmail.com","asdfg");
+
         assertEquals("nico@gmail.com", userTest.getEmail());
         assertEquals("1234",userTest.getContrasenia());
         assertEquals("Nicolas", userTest.getNombre());
         assertEquals("Vaccaro",userTest.getApellido());
         assertEquals("40.123.456", userTest.getDni());
+
+        assertEquals("test1@gmail.com", usuario1.getEmail());
+        assertEquals("12345",usuario1.getContrasenia());
+
+        assertEquals(1L,usuario2.getIdUsuario());
+        assertEquals("test2@gmail.com", usuario2.getEmail());
+        assertEquals("asdfg",usuario2.getContrasenia());
+
     }
 
     @Test

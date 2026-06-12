@@ -1,5 +1,9 @@
 package com.unq.eis.apibancaria.controller;
 
+import com.unq.eis.apibancaria.controller.dto.request.UsuarioActualizarRequest;
+import com.unq.eis.apibancaria.exception.ContraseniaVaciaException;
+import com.unq.eis.apibancaria.exception.EmailYaExistenteException;
+import com.unq.eis.apibancaria.exception.MailInvalidoException;
 import com.unq.eis.apibancaria.exception.UsuarioInexistenteException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,13 +12,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -67,11 +69,11 @@ public class UsuarioControllerTest {
     void crearUsuario_exitoso_retornCreated() throws Exception {
         UsuarioRequest request = new UsuarioRequest("test@example.com", "secret");
 
-        // Simular que el servicio asigna el id al usuario pasado por referencia
+
         doAnswer(invocation -> {
             Usuario arg = invocation.getArgument(0);
             arg.setIdUsuario(1L);
-            return null; // crear() es void según el controller
+            return null;
         }).when(usuarioService).crear(any(Usuario.class));
 
         mockMvc.perform(post(BASE_URL)
@@ -89,10 +91,9 @@ public class UsuarioControllerTest {
     void actualizarUsuario_exitoso_retornOk() throws Exception {
         UsuarioRequest request = new UsuarioRequest("test@example.com", "secret");
 
-        // Simular que actualizar() es void; solo verificamos que fue llamado y que el controller devuelve el modelo con id
+
         doAnswer(invocation -> {
             Usuario arg = invocation.getArgument(1);
-            // aseguramos que tiene el id seteado por el controller
             arg.setIdUsuario(1L);
             return null;
         }).when(usuarioService).actualizar(eq(1L), any(Usuario.class));
@@ -110,7 +111,7 @@ public class UsuarioControllerTest {
 
     @Test
     void eliminarUsuario_exitoso_retornNoContent() throws Exception {
-        // eliminar() es void por lo que basta con doNothing (por defecto no hace falta)
+
         doNothing().when(usuarioService).eliminar(1L);
 
         mockMvc.perform(delete(BASE_URL + "/1"))
@@ -162,6 +163,83 @@ public class UsuarioControllerTest {
                 .andExpect(status().isNotFound());
 
         verify(usuarioService).login("test@test.com", "incorrecta");
+    }
+    @Test
+    void crearUsuarioConMailInvalido() throws Exception {
+
+        UsuarioRequest request = new UsuarioRequest(
+                "mailInvalido",
+                "1234"
+        );
+
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("El mail es vacío o es inválido!"));
+
+        verify(usuarioService, never()).crear(any(Usuario.class));
+    }
+    @Test
+    void crearUsuarioConContraseniaVacia() throws Exception {
+
+        UsuarioRequest request = new UsuarioRequest(
+                "test@test.com",
+                ""
+        );
+
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("La contraseña tiene que tener al menos 4 carácteres!"));
+
+        verify(usuarioService, never()).crear(any(Usuario.class));
+    }
+    @Test
+    void crearUsuarioConContraseniaLongitudMenor() throws Exception {
+
+        UsuarioRequest request = new UsuarioRequest(
+                "test@test.com",
+                "ab"
+        );
+
+        mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("La contraseña tiene que tener al menos 4 carácteres!"));
+
+        verify(usuarioService, never()).crear(any(Usuario.class));
+    }
+
+    @Test
+    void actualizarUsuarioConEmailYaExistente() throws Exception {
+
+        UsuarioActualizarRequest request = new UsuarioActualizarRequest(
+                "existentemail@test.com",
+                "1234",
+                "Nico",
+                "Vaccaro",
+                "12345678"
+        );
+
+        doThrow(new EmailYaExistenteException(
+                "Ya existe un usuario con ese email"))
+                .when(usuarioService)
+                .actualizar(eq(1L), any(Usuario.class));
+
+        mockMvc.perform(put(BASE_URL + "/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message")
+                        .value("Ya existe un usuario con ese email"));
+
+        verify(usuarioService).actualizar(eq(1L), any(Usuario.class));
     }
 }
 

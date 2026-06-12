@@ -99,10 +99,6 @@ public class Usuario {
         this.cajas.add(Objects.requireNonNull(caja, "La caja no puede ser null"));
     }
 
-    public void removeCaja(Caja caja){
-        if(this.laCajaMePertenece(caja))
-            this.cajas.remove(caja);
-    }
 
     public BigDecimal consultarSaldo( Caja caja) {
         if (!this.laCajaMePertenece(caja))
