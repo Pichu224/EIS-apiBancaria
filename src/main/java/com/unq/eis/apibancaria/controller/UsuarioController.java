@@ -51,10 +51,16 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioResponse);
     }
 
-
     @PostMapping("/login")
     public ResponseEntity<UsuarioCompletoResponse> login(@RequestBody UsuarioRequest usuarioRequest){
         Usuario usuario = usuarioService.login(usuarioRequest.email(), usuarioRequest.contrasenia());
+        UsuarioCompletoResponse usuarioResponse = UserMapper.desdeModeloCompleto(usuario);
+        return ResponseEntity.ok(usuarioResponse);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<UsuarioCompletoResponse> register(@RequestBody UsuarioRequest usuarioRequest){
+        Usuario usuario = usuarioService.register(usuarioRequest.email(), usuarioRequest.contrasenia());
         UsuarioCompletoResponse usuarioResponse = UserMapper.desdeModeloCompleto(usuario);
         return ResponseEntity.ok(usuarioResponse);
     }

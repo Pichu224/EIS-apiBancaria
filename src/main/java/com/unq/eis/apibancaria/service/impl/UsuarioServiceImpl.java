@@ -65,4 +65,9 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarioDao.findByEmailAndContrasenia(email,contrasenia)
                 .orElseThrow(() ->  new UsuarioInexistenteException("Email o contraseña incorrectos"));
     }
+
+    public Usuario register(String email, String contrasenia) {
+        Usuario usuario = new Usuario(email, contrasenia);
+        return this.crear(usuario);
+    }
 }

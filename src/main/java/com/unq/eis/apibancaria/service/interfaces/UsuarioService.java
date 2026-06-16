@@ -10,4 +10,5 @@ public interface UsuarioService {
     Usuario actualizar(Long id, Usuario usuario);
     void eliminar(Long idUsuario);
     Usuario login(String email, String contrasenia);
+    Usuario register(String email, String contrasenia);
 }
