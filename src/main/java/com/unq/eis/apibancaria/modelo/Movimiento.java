@@ -1,21 +1,19 @@
 package com.unq.eis.apibancaria.modelo;
 
+import com.unq.eis.apibancaria.exception.MontoInvalidoException;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "movimiento")
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = "cajaUtilizada")
-
 public class Movimiento {
 
     @Id
@@ -26,9 +24,8 @@ public class Movimiento {
     private BigDecimal monto;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime fechaRealizado;
+    private LocalDateTime fechaRealizado = LocalDateTime.now();
 
-    @Column(length = 255)
     private String descripcion;
 
     @Column(nullable = false)
@@ -38,11 +35,18 @@ public class Movimiento {
     @JoinColumn(name = "id_caja", nullable = false)
     private Caja cajaUtilizada;
 
-    public Movimiento(Long nroTransferencia, Caja cajaUtilizada,String descripcion) {
-
-        // El resto de valores se deberan setear una vez hecha la transferenci, utilizando los setters se la clase para luego persistir como corresponde.
+    public Movimiento(@NonNull Long nroTransferencia, @NonNull Caja cajaUtilizada, @NonNull BigDecimal monto, @NonNull String nroCajaDestino) {
         this.nroTransferencia = nroTransferencia;
         this.cajaUtilizada = cajaUtilizada;
-        this.descripcion = descripcion;
+        this.validarMonto(monto);
+        this.monto = monto;
+        // Esto puede ser modificado para que quede mejor la descripcion.
+        this.descripcion = "Transferencia desde caja " + cajaUtilizada.getNroCaja() + " hacia caja " + nroCajaDestino;;
+    }
+
+    private void validarMonto(BigDecimal monto) {
+        if(monto.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new MontoInvalidoException("El monto debe ser mayor a cero!");
+        }
     }
 }

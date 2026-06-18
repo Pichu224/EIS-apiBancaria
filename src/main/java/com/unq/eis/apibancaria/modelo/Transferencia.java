@@ -34,25 +34,20 @@ public class Transferencia {
     @JoinColumn(name = "caja_destino", nullable = false)
     private Caja cajaDestino;
 
-    public Transferencia(BigDecimal montoTotal, Caja cajaOrigen, Caja cajaDestino) {
-
-        if(montoTotal.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new MontoInvalidoException("El monto debe ser mayor a cero."); //Modificar
-        }
-
-        if(cajaOrigen == null || cajaDestino == null) {
-            throw new CajasNoIngresadasException("Las cajas no pueden ser nulas."); //Modificar
-        }
-
-        if(cajaOrigen.equals(cajaDestino)) { // Modificar ya que se deberia chequear por Id.
-            throw new CajasIgualesException(
-                    "La caja origen y destino no pueden ser iguales"
-            );
-        }
-
+    public Transferencia(@NonNull BigDecimal montoTotal, @NonNull Caja cajaOrigen, @NonNull Caja cajaDestino) {
+        this.validarCondicionConstructor(montoTotal, cajaOrigen, cajaDestino);
         this.montoTotal = montoTotal;
         this.cajaOrigen = cajaOrigen;
         this.cajaDestino = cajaDestino;
         this.fechaRealizado = LocalDateTime.now();
+    }
+
+    private void validarCondicionConstructor(BigDecimal montoTotal, Caja cajaOrigen, Caja cajaDestino) {
+        if(montoTotal.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new MontoInvalidoException("El monto debe ser mayor a cero.");
+        }
+        if(cajaOrigen.getIdCaja().equals(cajaDestino.getIdCaja())) {
+            throw new CajasIgualesException("La caja origen y destino no pueden ser iguales");
+        }
     }
 }

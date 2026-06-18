@@ -1,12 +1,12 @@
 package com.unq.eis.apibancaria.service.interfaces;
 
+import com.unq.eis.apibancaria.modelo.Caja;
 import com.unq.eis.apibancaria.modelo.Transferencia;
+
+import java.math.BigDecimal;
 
 public interface TransferenciaService {
 
-    void crear(Transferencia transferencia);
+    Transferencia tranferir(Long idCajaOrigen, String cajaDestino, BigDecimal montoTotal);
     Transferencia recuperar(Long idTransferencia);
-    void actualizar(Transferencia transferencia);
-    void eliminar(Long idTransferencia);
-
 }

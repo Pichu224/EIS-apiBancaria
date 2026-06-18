@@ -1,68 +1,73 @@
 package com.unq.eis.apibancaria.service.impl;
 
+import com.unq.eis.apibancaria.exception.CajaInexistenteException;
+import com.unq.eis.apibancaria.modelo.Caja;
 import com.unq.eis.apibancaria.modelo.Usuario;
-import com.unq.eis.apibancaria.exception.*;
+import com.unq.eis.apibancaria.exception.EmailYaExistenteException;
+import com.unq.eis.apibancaria.exception.UsuarioInexistenteException;
+import com.unq.eis.apibancaria.persistence.CajaDAO;
 import com.unq.eis.apibancaria.persistence.UsuarioDAO;
 import com.unq.eis.apibancaria.service.interfaces.UsuarioService;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+
 @Service
 @Transactional
+@AllArgsConstructor
 public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioDAO usuarioDao;
+    private final CajaDAO cajaDAO;
 
-    public UsuarioServiceImpl(UsuarioDAO usuarioDao) {
-        this.usuarioDao = usuarioDao;
+    @Override
+    public Usuario crear(Usuario usuario) {
+        if (usuarioDao.existsByEmail(usuario.getEmail()))
+            throw new EmailYaExistenteException("Ya existe un usuario con ese email");
+        return usuarioDao.save(usuario);
     }
 
     @Override
-    public void crear(Usuario usuario){
-
-        if(this.usuarioDao.existsByEmail(usuario.getEmail()))
-            throw new EmailYaExistenteException("Ya existe un usuario con el mail ingresado, por favor ingresar uno distinto!");
-        this.usuarioDao.save(usuario);
-
+    @Transactional(readOnly = true)
+    public Usuario recuperar(Long idUsuario) {
+        return usuarioDao.findById(idUsuario)
+                .orElseThrow(() -> new UsuarioInexistenteException("Usuario no encontrado"));
     }
 
     @Override
-    public Usuario recuperar(Long idUsuario){
+    public Usuario actualizar(Long id, Usuario usuario) {
+        Usuario existente = this.recuperar(id);
 
-        try {
-            return this.usuarioDao.findById(idUsuario).orElseThrow(
-                    () -> new UsuarioInexistenteException("No existe ningun usuario persistido con ese id!"));
-        } catch (InvalidDataAccessApiUsageException e) {
-            throw new UsuarioInexistenteException("El usuario no posee id!");
-        }
+        if (!existente.getEmail().equals(usuario.getEmail()) &&
+                usuarioDao.existsByEmail(usuario.getEmail()))
+            throw new EmailYaExistenteException("Ya existe un usuario con ese email");
 
+        existente.setEmail(usuario.getEmail());
+        existente.setContrasenia(usuario.getContrasenia());
+        existente.setNombre(usuario.getNombre());
+        existente.setApellido(usuario.getApellido());
+        existente.setDni(usuario.getDni());
+
+        return existente;
     }
+
     @Override
-    public void actualizar(Usuario usuario){
-
-        try{
-            Usuario usuarioRecuperado = this.usuarioDao.findById(usuario.getIdUsuario()).orElseThrow(
-                    () -> new UsuarioInexistenteException("No existe ningun usuario persistido con ese id!"));
-
-            usuario.setIdUsuario(usuarioRecuperado.getIdUsuario());
-
-            this.usuarioDao.save(usuario);
-
-        }catch (InvalidDataAccessApiUsageException e){
-            throw new UsuarioInexistenteException("El usuario no posee id!");
-        }
-
+    public void eliminar(Long idUsuario) {
+        this.recuperar(idUsuario);
+        usuarioDao.deleteById(idUsuario);
     }
+
     @Override
-    public void eliminar(Long idUsuario){
-
-        try {
-            this.usuarioDao.deleteById(idUsuario);
-        } catch (InvalidDataAccessApiUsageException e) {
-            throw new UsuarioInexistenteException("El usuario no posee id!");
-        }
-
+    @Transactional(readOnly = true)
+    public Usuario login(String email, String contrasenia){
+        return usuarioDao.findByEmailAndContrasenia(email,contrasenia)
+                .orElseThrow(() ->  new UsuarioInexistenteException("Email o contraseña incorrectos"));
     }
 
+    public Usuario register(String email, String contrasenia) {
+        Usuario usuario = new Usuario(email, contrasenia);
+        return this.crear(usuario);
+    }
 }
